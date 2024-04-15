@@ -1,0 +1,14 @@
+ Node.js
+node_modules
+
+# Environment variables
+.env
+
+# Production build files
+/build
+
+# Logs
+*.log
+
+# Others
+.DS_Store
