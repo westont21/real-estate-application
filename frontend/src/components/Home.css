@@ -1,0 +1,51 @@
+/* src/components/Home.css */
+
+.home-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.content-section {
+    text-align: center;
+    padding: 50px;
+}
+
+.image-section {
+    text-align: center;
+}
+
+.image-section img {
+    max-width: 100%; /* Adjust image size as needed */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 20px auto; /* Center the image */
+}
+
+.testimonials-section {
+    background-color: #f8f8f8;
+    padding: 20px;
+    text-align: center;
+}
+
+.testimonial blockquote {
+    font-style: italic;
+}
+
+.testimonial cite {
+    display: block;
+    text-align: right;
+    margin-top: 10px;
+}
+
+.cta-button {
+    background-color: #0044cc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+
