@@ -1,37 +1,23 @@
 // src/components/Home.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './Home.css'; // Link to your CSS file for the homepage
-import jupiterHomeImage from '../assets/images/jup_home.jpg'; // Import the image
+import jupiterHomeVideo from '../assets/videos/jup_home.mp4'; // Import the video
 
 function Home() {
-    const [typedText, setTypedText] = useState('');
-
-    useEffect(() => {
-        const textToType = "Negotiate Directly with Realtors"; // Text to be typed
-        let index = 0;
-
-        const typingInterval = setInterval(() => {
-            setTypedText((prevTypedText) => prevTypedText + textToType[index]);
-            index++;
-            if (index === textToType.length) {
-                clearInterval(typingInterval);
-            }
-        }, 100); // Typing speed (milliseconds)
-
-        return () => clearInterval(typingInterval); // Clean up on unmount
-    }, []);
-
     return (
         <div className="home-container">
-            <section className="content-section">
-                <div className="hero-text">
-                    <h1>{typedText}</h1>
+            <section className="video-section">
+                <video autoPlay loop muted className="background-video">
+                    <source src={jupiterHomeVideo} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+
+                <div className="overlay"></div> {/* Optional: Add an overlay to improve text readability */}
+                <div className="content">
+                    <h1>Negotiate Directly with Realtors</h1>
                     <p>Find your perfect match in the real estate market and save on commissions.</p>
                     <button className="cta-button">Get Started</button>
                 </div>
-            </section>
-            <section className="image-section">
-                <img src={jupiterHomeImage} alt="Jupiter Home" />
             </section>
             <section className="testimonials-section">
                 <div className="testimonial">
