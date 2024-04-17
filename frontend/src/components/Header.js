@@ -11,7 +11,8 @@ function Header() {
                 <Link to="/how-it-works">How It Works</Link>
                 <Link to="/about-us">About Us</Link>
                 <Link to="/contact">Contact</Link>
-                <Link to="/login">Login/Sign Up</Link>
+                <Link to="/login">Login</Link>
+                <Link to="/signup">Sign Up</Link>
             </nav>
         </header>
     );

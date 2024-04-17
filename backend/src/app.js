@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
+const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
 
@@ -13,6 +14,7 @@ app.use(cors({
   origin: 'http://localhost:3000' // Your React app's URL
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
