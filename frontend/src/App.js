@@ -1,25 +1,30 @@
-// src/App.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
 import Login from './components/Login';
-import Signup from './components/Signup';
 
 function App() {
     return (
-        <div>
+        <AuthProvider> {/* Wrap all routes with AuthProvider */}
             <Header />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                {/* other routes */}
+                {/* Additional routes can be added here */}
             </Routes>
             <Footer />
-        </div>
+        </AuthProvider>
     );
 }
 
 export default App;
+
+
+/*
+If your app includes more conditional logic based on the user state, you might want to 
+handle that within your React context or use additional routes that depend on user status. 
+For instance, a user profile page that should only be accessible when logged in.
+*/
