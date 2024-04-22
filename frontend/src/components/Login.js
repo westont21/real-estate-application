@@ -1,52 +1,44 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const { auth } = useAuth(); // Destructure to get the 'auth' object from context
+    console.log('Current Auth State:', auth);
 
-    // Update the loginUser function to be part of the component so it can access email and password states
-    const loginUser = async () => {
-        try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
-                email, // use state variable
-                password // use state variable
-            });
-            console.log('Login response:', response.data);
-            // Redirect user or store the token in local storage
-            // For example, you could use localStorage to store the token:
-            // localStorage.setItem('token', response.data.token);  NOTE: DON'T USE LOCAL STORAGE
-            // Redirect to another page, you might want to use useHistory hook from react-router-dom
-        } catch (error) {
-            console.error('Login error:', error.response ? error.response.data : "Network error");
-        }
-    };
+    // Redirect if already logged in
+    if (auth.isAuthenticated) {
+        console.log('Current Auth State:', auth);
+        navigate('/'); // Redirect to the root if already logged in
+    }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        loginUser();
+    const handleLogin = async () => {
+        // Redirect to initiate OAuth flow
+        window.location.href = "https://localhost:5001/auth/google"; 
+        console.log('Current Auth State:', auth);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Login</h2>
-            <label>
-                Email:
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-            </label>
-            <label>
-                Password:
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-            </label>
-            <button type="submit">Login</button>
-        </form>
+        <div>
+            <h1>Login</h1>
+            <button onClick={handleLogin}>Login with Google</button>
+        </div>
     );
 }
 
 export default Login;
 
-/* 
-Secure Storage: For production, consider using a more secure way to handle authentication tokens than localStorage, which is susceptible to XSS attacks. Libraries like Secure-Ls can encrypt the data stored in LocalStorage.
-Use Environment Variables: Ensure that .env files are set up correctly in your React project and that REACT_APP_API_URL is defined in your .env.local or similar environment file.
-React Router for Redirection: If you want to redirect the user after login, you can use the useNavigate hook from react-router-dom in React Router v6.
-*/ 
+
+/*
+Considerations
+
+Session Persistence: Make sure your session or user authentication state persists across page reloads 
+and navigation. This typically involves setting cookies or session tokens that your backend recognizes
+and validates on each request.
+
+Conditional Rendering: Depending on how your application is structured, you might want to conditionally 
+render navigation links or other components based on the user's authentication status. 
+This could include showing a logout link or hiding the login button if the user is already logged in.
+
+*/

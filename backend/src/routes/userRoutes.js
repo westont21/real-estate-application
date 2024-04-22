@@ -1,9 +1,6 @@
-// backend/src/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
-const { registerUser, loginUser } = require('../controllers/userController');
 
-router.post('/signup', registerUser);
-router.post('/login', loginUser);
+// Potentially add routes that handle user profile management or OAuth specific routes if needed
 
 module.exports = router;

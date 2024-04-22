@@ -1,14 +1,21 @@
-To use HTTPS in your Express app, you need an SSL certificate. For local development, you can generate a self-signed certificate, but for production, you should use a certificate from a trusted CA (Certificate Authority).
+ To use HTTPS in your Express app, you need an SSL certificate. For local development, you can generate a self-signed certificate, but for production, you should use a certificate from a trusted CA (Certificate Authority).
 
-run this command to generate a self signed SSL certificate for development purposes only and then place them in a security directory
+# Install mkcert and setup and create a self signed CA for localhost
+ - This certificate will be placed in your keychain system certifcates
 ```bash
-openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.cert -days 365 -nodes -subj "/CN=localhost"
+brew install mkcert
+mkcert -install
+mkcert localhost
 ```
 
+# Name the certificate security and add the certificate to your security folder
+```bash
+cd security
+mkcert server
+cd ..
+```
 
-
-Future considerations: 
-
+# Future considerations: 
 For Production SSL Certificate: Obtain your SSL certificate from a trusted CA for your production environment.
 Database Security: Ensure that your database connections are also secure and use encrypted connections if possible.
 API Security Best Practices: Consider other security practices such as API throttling, more sophisticated rate limiting, and using OAuth for better authentication mechanisms. 
