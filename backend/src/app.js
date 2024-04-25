@@ -41,7 +41,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
- // Monitoring 
+// Monitoring 
 const collectDefaultMetrics = promClient.collectDefaultMetrics;
 collectDefaultMetrics({ timeout: 5000 }); // Probe every 5 seconds
 
@@ -72,8 +72,8 @@ logger.error('Error level log');
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI).then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
- // Use existing Mongoose connection for session store
- app.use(session({
+// Use existing Mongoose connection for session store
+app.use(session({
   secret: 'your_secret',
   resave: false,
   saveUninitialized: false,
@@ -139,17 +139,28 @@ app.use((req, res, next) => {
 /*
   Routes 
 */
-
 // Expose the metrics at the '/metrics' endpoint
 app.get('/metrics', async (req, res) => {
-  try {
-    res.set('Content-Type', promClient.register.contentType);
-    const metrics = await promClient.register.metrics(); // Ensure the promise is resolved
-    res.end(metrics); // Send the resolved metrics
-  } catch (err) {
-    console.error('Error retrieving metrics:', err);
-    res.status(500).send('Failed to retrieve metrics');
-  }
+  res.set('Content-Type', promClient.register.contentType);
+  res.end(await promClient.register.metrics());
+});
+
+app.get('/logout', (req, res) => {
+  req.logout(function(err) {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).json({ message: 'Logout failed', error: err });
+    }
+    // Destroy the session and clear the associated cookie
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+        return res.status(500).json({ message: 'Failed to destroy session', error: err });
+      }
+      res.clearCookie('connect.sid', { path: '/' });  // Adjust the cookie name if different
+      res.json({ message: 'Successfully logged out' });
+    });
+  });
 });
 
 // Handle root endpoint
@@ -175,13 +186,24 @@ app.get('/login', (req, res) => {
   res.status(401).send('Login Failed. Unable to authenticate with Google.'); // Provide a more informative message or a login page
 });
 
+// This route logs the user out and redirects them to the home page or login page.
+app.get('/logout', (req, res) => {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    // Clear the session cookie if it's set
+    res.clearCookie('connect.sid', { path: '/' });
+    // Redirect to home page or login page as per your application requirement
+    res.redirect('https://localhost:3000/');
+  });
+});
+
 // Setup routes
 app.use('/api/users', userRoutes);
 
-  /* 
-  Route to handle verification of user session.  If the user is authenticated,
-  it retrieves the user's data from the database and sends it back to the client.
- */
+/* 
+Route to handle verification of user session.  If the user is authenticated,
+it retrieves the user's data from the database and sends it back to the client.
+*/
 app.get('/verify', async (req, res) => {
   if (req.isAuthenticated()) {
     try {
@@ -215,3 +237,5 @@ const options = {
 https.createServer(options, app).listen(5001, () => {
   console.log('HTTPS server running on https://localhost:5001');
 });
+
+//Okay. Now you know my code base. Can you show me all the file changes to move the login signup button to the top right side. I want to have it say login if I am not logged in and logout if I am logged in. I feel like I don't need signup since people are logging in with google so we don't really need a signup Is my opinion. Please provide full files with all the code that I had before to make all these changes. Also while your at it if there are any other things that would make this project better feel free to make those changes on your own but explain what your doing

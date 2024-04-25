@@ -1,31 +1,31 @@
-/*
-    We create an AuthContext that stores authentication status and user data.
-    An AuthProvider component wraps the application's component tree to provide this context.
-    We use an effect to check the user's session when the application loads, which helps in 
-    persisting user login state across page reloads.
-*/
+// src/context/AuthContext.js
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axiosInstance from '../config/axiosConfig';
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({ isAuthenticated: false });
 
+    // Attempt to verify session on initial load
     useEffect(() => {
-        // Check auth state on component mount
-        const checkAuth = async () => {
+        const verifySession = async () => {
             try {
-                const response = await axiosInstance.get('/verify');
-                if (response.data.isAuthenticated) {
-                    setAuth({ isAuthenticated: true });
+                const response = await fetch('https://localhost:5001/verify', {
+                    credentials: 'include', // Important for sessions
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setAuth({ isAuthenticated: true, user: data.user });
+                } else {
+                    setAuth({ isAuthenticated: false });
                 }
             } catch (error) {
-                console.log('Auth check failed', error);
-                setAuth({ isAuthenticated: false, user: null }); // Properly handle not authenticated state
+                console.error('Session verification failed:', error);
             }
         };
 
-        checkAuth();
+        verifySession();
     }, []);
 
     return (
@@ -36,4 +36,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
