@@ -17,7 +17,7 @@ npm install
 
 Start the backend server
 ```bash
-npm start
+node src/app.js
 ``` 
 
 ### Frontend Setup
@@ -32,4 +32,4 @@ npm start
 
 ### Usage
 
-Open http://localhost:3000 to view the frontend in the browser.
+Open https://localhost:3000 to view the frontend in the browser.

@@ -5,15 +5,18 @@
 ```bash
 brew install mkcert
 mkcert -install
-mkcert localhost
 ```
 
 # Name the certificate security and add the certificate to your security folder
 ```bash
+mkdir security
 cd security
 mkcert server
 cd ..
 ```
+
+- Visit https://cloud.mongodb.com for db control
+- Visit https://console.cloud.google.com for oauth control 
 
 # Future considerations: 
 For Production SSL Certificate: Obtain your SSL certificate from a trusted CA for your production environment.
