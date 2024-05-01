@@ -24,6 +24,16 @@ require('dotenv').config();
 */
 const app = express();
 const PORT = process.env.PORT || 5001; // Ensure PORT is correctly defaulted
+const corsOptions = {
+  origin: 'https://localhost:3000',  // This should match the exact URL of your frontend
+  credentials: true,  // This allows cookies/session to be sent
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));//Handel preflight globally
+
+app.use(express.json());
+app.use(cookieParser());
 // Applying basic security headers with Helmet
 app.use(helmet());
 // Rate limiting
@@ -33,21 +43,12 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-const corsOptions = {
-  origin: 'https://localhost:3000',
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(cookieParser());
 // Monitoring 
 const collectDefaultMetrics = promClient.collectDefaultMetrics;
 collectDefaultMetrics({ timeout: 5000 }); // Probe every 5 seconds
 
 /*
   Logging configuration 
-
 */
 // Configure Winston
 const logger = winston.createLogger({
@@ -78,12 +79,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    client: mongoose.connection.getClient(), // Correctly get the client from mongoose
+    mongoUrl: process.env.MONGODB_URI,
     collectionName: 'sessions'
   }),
   cookie: {
-    secure: true, // Secure must be true if using 'SameSite=None'
-    sameSite: 'None', // Necessary for cross-site cookies
+    secure: process.env.NODE_ENV === 'production', // Only set secure in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Adjust for development
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -95,7 +96,8 @@ app.use(session({
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "https://localhost:5001/auth/google/callback"
+  callbackURL: "https://localhost:5001/auth/google/callback", 
+  prompt: 'select_account'  // This often needs to be set in the authentication URL instead
 },
   async function (accessToken, refreshToken, profile, cb) {
     try {
@@ -116,25 +118,30 @@ passport.use(new GoogleStrategy({
   }));
 
 passport.serializeUser(function (user, done) {
+  
   done(null, user.id); // Serialize user by their id
 });
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
-    done(null, user); // Pass no error and the user object if successfully found
+    if (!user) {
+      done(new Error('User not found'), null); // Handle case where user isn't found
+    } else {
+      done(null, user);
+    }
   } catch (err) {
-    done(err, null); // Pass the error if something goes wrong
+    done(err, null); // Properly handle database or other errors
   }
 });
 app.use(passport.initialize());
 app.use(passport.session());
 
 //Server-Side Session Debugging
-app.use((req, res, next) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Session ID:', req.sessionID);
+//   console.log('Session data:', req.session);
+//   next();
+// });
 
 /*
   Routes 
@@ -173,12 +180,12 @@ app.get('/', (req, res) => {
 });
 
 // Google OAuth routes
-app.get('/auth/google',
+app.get('/auth/google', 
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   console.log('Google profile data:', req.user); // Assuming req.user contains the OAuth profile data
-  res.redirect('https://localhost:3000/'); // Adjust according to your frontend URL
+  res.redirect('https://localhost:3000'); // Adjust according to your frontend URL
 });
 
 // Handle login failures explicitly
@@ -186,19 +193,8 @@ app.get('/login', (req, res) => {
   res.status(401).send('Login Failed. Unable to authenticate with Google.'); // Provide a more informative message or a login page
 });
 
-// This route logs the user out and redirects them to the home page or login page.
-app.get('/logout', (req, res) => {
-  req.logout(function (err) {
-    if (err) { return next(err); }
-    // Clear the session cookie if it's set
-    res.clearCookie('connect.sid', { path: '/' });
-    // Redirect to home page or login page as per your application requirement
-    res.redirect('https://localhost:3000/');
-  });
-});
-
 // Setup routes
-app.use('/api/users', userRoutes);
+//app.use('/api/users', userRoutes);
 
 /* 
 Route to handle verification of user session.  If the user is authenticated,
@@ -223,6 +219,7 @@ app.get('/verify', async (req, res) => {
   }
 });
 
+
 app.use((err, req, res, next) => {
   console.error('An error occurred:', err.stack);
   res.status(500).send('Internal Server Error');
@@ -237,5 +234,3 @@ const options = {
 https.createServer(options, app).listen(5001, () => {
   console.log('HTTPS server running on https://localhost:5001');
 });
-
-//Okay. Now you know my code base. Can you show me all the file changes to move the login signup button to the top right side. I want to have it say login if I am not logged in and logout if I am logged in. I feel like I don't need signup since people are logging in with google so we don't really need a signup Is my opinion. Please provide full files with all the code that I had before to make all these changes. Also while your at it if there are any other things that would make this project better feel free to make those changes on your own but explain what your doing

@@ -5,19 +5,17 @@ import { useAuth } from '../context/AuthContext';
 function Login() {
     const navigate = useNavigate();
     const { auth } = useAuth(); // Destructure to get the 'auth' object from context
-    console.log('Current Auth State:', auth);
+    console.log('Current Auth State in login:', auth);
 
     // Redirect if already logged in
     if (auth.isAuthenticated) {
-        console.log('Current Auth State:', auth);
+        console.log('ALREADY LOGGED IN:', auth);
         navigate('/'); // Redirect to the root if already logged in
     }
-
-    const handleLogin = async () => {
-        // Redirect to initiate OAuth flow
-        window.location.href = "https://localhost:5001/auth/google"; 
-        console.log('Current Auth State:', auth);
-    };
+    const handleLogin = () => {
+        // Redirect to initiate OAuth flow with prompt
+        window.location.href = "https://localhost:5001/auth/google?prompt=select_account"; 
+      };
 
     return (
         <div>
@@ -33,7 +31,7 @@ export default Login;
 /*
 Considerations
 
-Session Persistence: Make sure your session or user authentication state persists across page reloads 
+Session Perosistence: Make sure your session r user authentication state persists across page reloads 
 and navigation. This typically involves setting cookies or session tokens that your backend recognizes
 and validates on each request.
 

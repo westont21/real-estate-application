@@ -1,24 +1,25 @@
-// src/context/AuthContext.js
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext({});
 
 export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({ isAuthenticated: false });
 
-    // Attempt to verify session on initial load
     useEffect(() => {
+        // This function checks the current auth state when the component mounts
         const verifySession = async () => {
             try {
                 const response = await fetch('https://localhost:5001/verify', {
-                    credentials: 'include', // Important for sessions
+                    method: 'GET', 
+                    credentials: 'include'
                 });
                 const data = await response.json();
-                if (response.ok) {
+                console.log(data)
+                if (response.ok && data.isAuthenticated) {
                     setAuth({ isAuthenticated: true, user: data.user });
                 } else {
                     setAuth({ isAuthenticated: false });
+                    console.log("CAUGHT IN ELSE: NOT AUTHED")
                 }
             } catch (error) {
                 console.error('Session verification failed:', error);
