@@ -29,3 +29,9 @@ const LogoutButton = () => {
 };
 
 export default LogoutButton;
+
+/*
+Check: Ensure that LogoutButton correctly handles the session termination on the backend, 
+and it might be useful to force a refresh or use a callback to update the authentication state 
+across the app when logging out.
+*/

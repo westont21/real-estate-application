@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LogoutButton from './LogoutButton'; // Ensure the path is correct
+import LogoutButton from './LogoutButton';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
@@ -16,6 +16,9 @@ const Header = () => {
                 <Link to="/how-it-works">How It Works</Link>
                 <Link to="/about-us">About Us</Link>
                 <Link to="/contact">Contact</Link>
+                {auth.isAuthenticated && (
+                    <Link to="/profile">Profile</Link>
+                )}
                 {auth.isAuthenticated ? (
                     <LogoutButton />
                 ) : (
