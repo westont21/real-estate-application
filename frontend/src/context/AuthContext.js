@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
                     setAuth({ isAuthenticated: true, user: data.user });
                 } else {
                     setAuth({ isAuthenticated: false });
-                    console.log("CAUGHT IN ELSE: NOT AUTHED")
                 }
             } catch (error) {
                 console.error('Session verification failed:', error);

@@ -18,6 +18,12 @@ cd ..
 - Visit https://cloud.mongodb.com for db control
 - Visit https://console.cloud.google.com for oauth control 
 
+# Google Cloud SDK 
+- Follow: https://cloud.google.com/sdk/docs/install for cloud installation 
+- Once dowloaded (I placed in desktop prob doesnt matter) follow insturctions 
+- Try repopening a terminal and running gsutil version 
+    - If that doesnt work from a terminal on computer export PATH=$PATH:~/google-cloud-sdk/bin and then source ~/.bashrc
+    
 # Future considerations: 
 For Production SSL Certificate: Obtain your SSL certificate from a trusted CA for your production environment.
 Database Security: Ensure that your database connections are also secure and use encrypted connections if possible.

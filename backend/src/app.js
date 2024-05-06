@@ -10,8 +10,10 @@ const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const userRoutes = require('./routes/userRoutes');
 const User = require('./models/User');
+//Route Imports
+const authRoutes = require('./routes/authRoutes.js')
+const profileRoutes = require('./routes/profileRoutes');
 //Logging with Winston and HTTP request logging with Morgan
 const winston = require('winston');
 const morgan = require('morgan');
@@ -152,72 +154,31 @@ app.get('/metrics', async (req, res) => {
   res.end(await promClient.register.metrics());
 });
 
-app.get('/logout', (req, res) => {
-  req.logout(function(err) {
-    if (err) {
-      console.error('Logout error:', err);
-      return res.status(500).json({ message: 'Logout failed', error: err });
-    }
-    // Destroy the session and clear the associated cookie
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Session destruction error:', err);
-        return res.status(500).json({ message: 'Failed to destroy session', error: err });
+app.use(authRoutes); 
+app.use(profileRoutes);
+
+  /* 
+  Route to handle verification of user session.  If the user is authenticated,
+  it retrieves the user's data from the database and sends it back to the client.
+  */
+  app.get('/verify', async (req, res) => {
+    if (req.isAuthenticated()) {
+      try {
+        // Assuming req.user is populated according to session and passport configuration
+        const user = await User.findById(req.user.id);
+        // Check if user was found
+        if (!user) {
+          return res.status(404).json({ isAuthenticated: true, error: 'User not found.' });
+        }
+        res.json({ isAuthenticated: true, user: { id: user.id, username: user.username, email: user.email } });
+      } catch (err) {
+        console.error("Database error:", err); // Log error for debugging
+        res.status(500).json({ isAuthenticated: false, error: 'Failed to retrieve user data.' });
       }
-      res.clearCookie('connect.sid', { path: '/' });  // Adjust the cookie name if different
-      res.json({ message: 'Successfully logged out' });
-    });
+    } else {
+      res.status(401).json({ isAuthenticated: false });
+    }
   });
-});
-
-// Handle root endpoint
-app.get('/', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.send(`Welcome ${req.user.displayName}! You are logged in successfully.`);
-  } else {
-    res.send('Welcome to our application! Please log in.');
-  }
-});
-
-// Google OAuth routes
-app.get('/auth/google', 
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  console.log('Google profile data:', req.user); // Assuming req.user contains the OAuth profile data
-  res.redirect('https://localhost:3000'); // Adjust according to your frontend URL
-});
-
-// Handle login failures explicitly
-app.get('/login', (req, res) => {
-  res.status(401).send('Login Failed. Unable to authenticate with Google.'); // Provide a more informative message or a login page
-});
-
-// Setup routes
-//app.use('/api/users', userRoutes);
-
-/* 
-Route to handle verification of user session.  If the user is authenticated,
-it retrieves the user's data from the database and sends it back to the client.
-*/
-app.get('/verify', async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      // Assuming req.user is populated according to your session and passport configuration
-      const user = await User.findById(req.user.id);
-      // Check if user was found
-      if (!user) {
-        return res.status(404).json({ isAuthenticated: true, error: 'User not found.' });
-      }
-      res.json({ isAuthenticated: true, user: { id: user.id, username: user.username, email: user.email } });
-    } catch (err) {
-      console.error("Database error:", err); // Log error for debugging
-      res.status(500).json({ isAuthenticated: false, error: 'Failed to retrieve user data.' });
-    }
-  } else {
-    res.status(401).json({ isAuthenticated: false });
-  }
-});
 
 
 app.use((err, req, res, next) => {
@@ -225,12 +186,9 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal Server Error');
 });
 
-const options = {
+https.createServer({
   key: fs.readFileSync('./security/server-key.pem'),
   cert: fs.readFileSync('./security/server.pem')
-};
-
-// HTTPS server setup
-https.createServer(options, app).listen(5001, () => {
-  console.log('HTTPS server running on https://localhost:5001');
+}, app).listen(PORT, () => {
+  logger.info(`HTTPS server running on https://localhost:${PORT}`);
 });
