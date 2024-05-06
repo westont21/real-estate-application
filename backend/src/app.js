@@ -164,7 +164,7 @@ app.use(profileRoutes);
   app.get('/verify', async (req, res) => {
     if (req.isAuthenticated()) {
       try {
-        // Assuming req.user is populated according to your session and passport configuration
+        // Assuming req.user is populated according to session and passport configuration
         const user = await User.findById(req.user.id);
         // Check if user was found
         if (!user) {
