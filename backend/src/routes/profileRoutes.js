@@ -28,40 +28,19 @@ const uploadHandler = multer({
     }
 });
 
-// Makes the bucket publicly readable (not recommended without consideration of content security)
-async function makeBucketPublic() {
-    await storage.bucket(process.env.BUCKET_NAME).iam.setPolicy({
-        bindings: [
-            {
-                role: 'roles/storage.objectViewer',
-                members: ['allUsers']
-            }
-        ]
-    });
-
-    console.log(`Bucket ${process.env.BUCKET_NAME} is now publicly readable`);
-}
-
-makeBucketPublic().catch(console.error);
-
 router.post('/updateProfile', ensureAuthenticated, uploadHandler.single('profilePicture'), async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        // Make the file publicly readable
-        makeBucketPublic();
         const { title, bio } = req.body;
         let profilePictureUrl = req.user.profilePicture || ''; // Use existing profile picture if not updating
-
         // If a new profile picture was uploaded, handle file upload to GCS
         if (req.file) {
             const blob = bucket.file(`${Date.now()}_${req.file.originalname}`);
             const blobStream = blob.createWriteStream({
-                metadata: {
-                    contentType: req.file.mimetype
-                }
+                metadata: { contentType: req.file.mimetype }
             });
 
             blobStream.on('error', err => {
@@ -70,15 +49,15 @@ router.post('/updateProfile', ensureAuthenticated, uploadHandler.single('profile
             });
 
             blobStream.on('finish', async () => {
-                // The public URL can be used to directly access the file via HTTP.
-                profilePictureUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+                // Optionally make the file publicly readable (consider security implications)
+                await blob.makePublic();
 
-                // Update user with new profile data and image URL
+                const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
                 const updatedUser = await User.findByIdAndUpdate(req.user._id, {
-                    title, bio, profilePicture: profilePictureUrl
+                    title, bio, profilePicture: publicUrl
                 }, { new: true });
 
-                res.json({ user: updatedUser, message: 'Profile updated successfully' });
+                res.json({ user: updatedUser, message: 'Profile updated successfully', fileUrl: publicUrl });
             });
 
             blobStream.end(req.file.buffer);
@@ -90,6 +69,20 @@ router.post('/updateProfile', ensureAuthenticated, uploadHandler.single('profile
     } catch (error) {
         console.error('Error updating profile:', error);
         res.status(500).send({ message: "Error updating profile", error: error.toString() });
+    }
+});
+
+// Route to fetch user profile data
+router.get('/getUserProfile', ensureAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).send({ message: "User not found." });
+        }
+        res.json({ user, message: 'Profile data fetched successfully' });
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).send({ message: "Error fetching user profile", error: error.toString() });
     }
 });
 

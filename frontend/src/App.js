@@ -6,15 +6,20 @@ import Footer from './components/Footer';
 import Home from './components/Home';
 import Login from './components/Login';
 import Profile from './components/Profile';
+import ProtectedRoute from './components/ProtectedRoute'; // Make sure to import your ProtectedRoute
 
 const App = () => {
     return (
         <AuthProvider>
             <div>
-                <Header />  
+                <Header />
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/profile" element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    } />
                     <Route path="/login" element={<Login />} />
                 </Routes>
                 <Footer />
