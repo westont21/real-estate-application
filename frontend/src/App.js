@@ -7,6 +7,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Profile from './components/Profile';
 import ProtectedRoute from './components/ProtectedRoute'; // Make sure to import your ProtectedRoute
+import ContractCreator from './components/ContractCreator';
 
 const App = () => {
     return (
@@ -18,6 +19,11 @@ const App = () => {
                     <Route path="/profile" element={
                         <ProtectedRoute>
                             <Profile />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/contract/creator" element={
+                        <ProtectedRoute>
+                            <ContractCreator />
                         </ProtectedRoute>
                     } />
                     <Route path="/login" element={<Login />} />

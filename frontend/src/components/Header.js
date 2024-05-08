@@ -15,7 +15,7 @@ const Header = () => {
             <nav>
                 <Link to="/how-it-works">How It Works</Link>
                 <Link to="/about-us">About Us</Link>
-                <Link to="/contact">Contact</Link>
+                <Link to="/contract/creator">ContractCreator</Link>
                 {auth.isAuthenticated && (
                     <Link to="/profile">Profile</Link>
                 )}
