@@ -13,7 +13,7 @@ const storage = new Storage({
     projectId: process.env.PROJECT_ID
 });
 
-const bucket = storage.bucket(process.env.BUCKET_NAME);
+const bucket = storage.bucket(process.env.PROFILE_PICTURE_BUCKET_NAME);
 
 // Setup multer for in-memory storage to facilitate file upload to GCS
 const multerStorage = multer.memoryStorage();
