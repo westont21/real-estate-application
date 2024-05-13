@@ -8,6 +8,7 @@ import Login from './components/Login';
 import Profile from './components/Profile';
 import ProtectedRoute from './components/ProtectedRoute'; // Make sure to import your ProtectedRoute
 import ContractCreator from './components/ContractCreator';
+import ContractList from './components/ContractList';
 
 const App = () => {
     return (
@@ -24,6 +25,12 @@ const App = () => {
                     <Route path="/contract/creator" element={
                         <ProtectedRoute>
                             <ContractCreator />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/view-contracts" element={
+                        <ProtectedRoute>
+                            <ContractList />
                         </ProtectedRoute>
                     } />
                     <Route path="/login" element={<Login />} />

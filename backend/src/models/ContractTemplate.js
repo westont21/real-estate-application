@@ -1,12 +1,10 @@
-// models/ContractTemplate.js
-
 const mongoose = require('mongoose');
 
 const contractTemplateSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Name of the template, e.g., "Realtor-Buyer Agreement"
+  name: { type: String, required: true },
   description: { type: String, required: true },
-  content: { type: Object, required: true }, // The template content with placeholders
+  content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('ContractTemplate', contractTemplateSchema);
+module.exports = mongoose.models.ContractTemplate || mongoose.model('ContractTemplate', contractTemplateSchema);

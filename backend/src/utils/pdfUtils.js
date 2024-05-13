@@ -1,16 +1,14 @@
-const fs = require('fs');
-const path = require('path');
-const pdf = require('pdfkit');
 const { Storage } = require('@google-cloud/storage');
+const pdf = require('pdfkit');
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 // Initialize Google Cloud Storage
 const storage = new Storage({
-  keyFilename: process.env.SERVICE_ACCOUNT_PATH,
+  keyFilename: process.env.CONTRACT_SERVICE_ACCOUNT_PATH,
   projectId: process.env.PROJECT_ID
 });
-const bucketName = process.env.CONTRACT_PDF_BUCKET_NAME;
-const bucket = storage.bucket(bucketName);
+const bucket = storage.bucket(process.env.CONTRACT_PDF_BUCKET_NAME);
 
 async function createFilledContractPDF(templateContent, placeholders) {
   let filledTemplate = templateContent;
@@ -34,14 +32,14 @@ async function createFilledContractPDF(templateContent, placeholders) {
   });
 }
 
-async function uploadToGoogleCloud(pdfBuffer) {
-  const fileName = `contract-${Date.now()}.pdf`;
-  const file = bucket.file(`contracts/${fileName}`);
+async function uploadToGoogleCloud(pdfBuffer, userId) {
+  const fileName = `contracts/${userId}/${uuidv4()}.pdf`;
+  const file = bucket.file(fileName);
 
   // Create a writable stream to pipe the PDF buffer
   const stream = file.createWriteStream({
     metadata: {
-      contentType: 'application/pdf' // Set the content type of the file
+      contentType: 'application/pdf'
     }
   });
 
@@ -51,20 +49,13 @@ async function uploadToGoogleCloud(pdfBuffer) {
     throw err;
   });
 
-  // Pipe the PDF buffer to the writable stream
   stream.end(pdfBuffer);
 
-  // Get the signed URL with a one-hour expiration
-  const options = {
-    version: 'v4',
-    action: 'read',
-    expires: Date.now() + 60 * 60 * 1000, // 1 hour
-  };
+  console.log('File uploaded to:', fileName); // Log the file path
 
-  const [url] = await file.getSignedUrl(options);
-  return url;
+  // Return the path to the file
+  return fileName;
 }
-
 
 module.exports = {
   createFilledContractPDF,

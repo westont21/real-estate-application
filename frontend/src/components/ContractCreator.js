@@ -4,8 +4,6 @@ function ContractCreator() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [placeholders, setPlaceholders] = useState({});
-  const [generatedContract, setGeneratedContract] = useState(null);
-  const [pdfUrl, setPdfUrl] = useState('');
   const [templatePreview, setTemplatePreview] = useState('');
 
   useEffect(() => {
@@ -28,18 +26,17 @@ function ContractCreator() {
       return;
     }
     setSelectedTemplate(selected._id);
-    setGeneratedContract(null);
-  
+
     // Extract placeholders to be filled from the template content or defined fields
     const placeholderRegex = /{{(.*?)}}/g;
     const matches = [...selected.content.matchAll(placeholderRegex)].map(match => match[1]);
-  
+
     // Prepare a placeholders object to hold input values
     const placeholdersData = {};
     matches.forEach((placeholder) => {
       placeholdersData[placeholder] = '';
     });
-  
+
     setPlaceholders(placeholdersData);
     updateTemplatePreview(selected.content, placeholdersData);
   };
@@ -81,16 +78,15 @@ function ContractCreator() {
         placeholders
       })
     });
-  
+
     if (response.ok) {
-      const { pdfUrl } = await response.json();
-      setPdfUrl(pdfUrl); // Assuming pdfUrl is the URL returned by the backend
+      const data = await response.json();
+      alert(data.message);
     } else {
       const data = await response.json();
       alert(`Error: ${data.error}`);
     }
   };
-  
 
   return (
     <div>
@@ -131,13 +127,6 @@ function ContractCreator() {
 
         <button type='submit'>Generate Contract</button>
       </form>
-
-      {pdfUrl && (
-        <div>
-          <h3>Generated Contract</h3>
-          <iframe title="Generated Contract" src={pdfUrl} style={{ width: '100%', height: '500px' }} />
-        </div>
-      )}
     </div>
   );
 }

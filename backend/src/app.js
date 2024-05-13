@@ -63,6 +63,13 @@ const logger = winston.createLogger({
     new winston.transports.File({ filename: 'combined.log' })
   ],
 });
+// Logging configuration
+logger.exceptions.handle(
+  new winston.transports.File({ filename: 'exceptions.log' })
+);
+process.on('unhandledRejection', (reason, promise) => {
+  throw reason; // Will be handled by winston
+});
 // Morgan setup to use Winston
 app.use(morgan('combined', { stream: { write: message => logger.info(message) } }));
 // Example of manual logging
@@ -78,7 +85,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => console.log("MongoDB connec
   .catch(err => console.log(err));
 // Use existing Mongoose connection for session store
 app.use(session({
-  secret: 'your_secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
@@ -86,8 +93,8 @@ app.use(session({
     collectionName: 'sessions'
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Only set secure in production
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Adjust for development
+    secure: true, // Use true in production
+    sameSite: 'None', // Adjust as needed
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));

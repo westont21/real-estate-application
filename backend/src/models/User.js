@@ -9,4 +9,4 @@ const userSchema = new mongoose.Schema({
     bio: String
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.userSchema || mongoose.model('User', userSchema);

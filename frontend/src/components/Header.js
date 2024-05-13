@@ -16,6 +16,7 @@ const Header = () => {
                 <Link to="/how-it-works">How It Works</Link>
                 <Link to="/about-us">About Us</Link>
                 <Link to="/contract/creator">ContractCreator</Link>
+                <Link to="/view-contracts">ContractList</Link>
                 {auth.isAuthenticated && (
                     <Link to="/profile">Profile</Link>
                 )}
