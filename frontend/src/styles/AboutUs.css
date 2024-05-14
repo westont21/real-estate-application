@@ -1,0 +1,65 @@
+/* src/styles/AboutUs.css */
+
+.about-us-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.about-us-content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.profile {
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.profile h3 {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.profile p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.profile:hover {
+    transform: scale(1.05);
+}
+
+.nar-info {
+    text-align: left;
+}
+
+.nar-info h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.nar-info p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
