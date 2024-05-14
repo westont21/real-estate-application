@@ -55,7 +55,7 @@ function ContractList() {
         </ul>
       )}
       {contractUrl && (
-        <iframe title="Contract PDF" src={contractUrl} style={{ width: '100%', height: '500px' }} />
+        <iframe title="Contract PDF" src={contractUrl} style={{ width: '100%', height: '1000px' }} />
       )}
     </div>
   );
