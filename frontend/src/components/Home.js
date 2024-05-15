@@ -17,6 +17,7 @@ function Home() {
                     <Link to="/how-it-works" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>How It Works</Link>
                     <Link to="/about-us" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>About Us</Link>
                     <Link to="/contracts" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>Contracts</Link>
+                    <Link to="/users/search" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>Users</Link>
                     <Link to="/profile" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>Profile</Link>
 
                     {auth.isAuthenticated ? (

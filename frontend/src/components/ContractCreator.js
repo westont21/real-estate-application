@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-
 
 function ContractCreator() {
   const [templates, setTemplates] = useState([]);

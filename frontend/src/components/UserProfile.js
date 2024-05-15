@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import Messaging from './Messaging';
 import '../styles/Profile.css';
 
-const ViewUserProfile = () => {
+const UserProfile = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
+  const [showMessaging, setShowMessaging] = useState(false);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -23,6 +25,10 @@ const ViewUserProfile = () => {
     fetchUser();
   }, [fetchUser]);
 
+  const handleViewMessage = () => {
+    setShowMessaging(true);
+  };
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -31,32 +37,20 @@ const ViewUserProfile = () => {
     <div className="container">
       <h1 className="header">Profile</h1>
       {user.profilePicture && (
-        <img
-          src={user.profilePicture}
-          alt="Profile"
-          className="profileImage"
-        />
+        <img src={user.profilePicture} alt="Profile" className="profileImage" />
       )}
       <div className="formGroup">
         <label className="formLabel">Username:</label>
-        <input
-          type="text"
-          value={user.username}
-          readOnly
-          className="formInput"
-        />
+        <input type="text" value={user.username} readOnly className="formInput" />
       </div>
       <div className="formGroup">
         <label className="formLabel">Email:</label>
-        <input
-          type="text"
-          value={user.email}
-          readOnly
-          className="formInput"
-        />
+        <input type="text" value={user.email} readOnly className="formInput" />
       </div>
+      <button className="button" onClick={handleViewMessage}>View Messages</button>
+      {showMessaging && <Messaging receiverId={user._id} />}
     </div>
   );
 };
 
-export default ViewUserProfile;
+export default UserProfile;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Post = require('../models/Post');
+const Message = require('../models/Message');
 const ensureAuthenticated = require('./authRoutes');
 
 // Create a new message
@@ -12,14 +12,14 @@ router.post('/messages', ensureAuthenticated, async (req, res) => {
   }
 
   try {
-    const newPost = new Post({
+    const newMessage = new Message({
       sender: req.user.id,
       receiver: receiverId,
       message: message
     });
 
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    const savedMessage = await newMessage.save();
+    res.status(201).json(savedMessage);
   } catch (error) {
     console.error('Error creating message:', error);
     res.status(500).json({ error: 'Failed to create message' });
@@ -29,12 +29,12 @@ router.post('/messages', ensureAuthenticated, async (req, res) => {
 // Get all messages for the authenticated user
 router.get('/messages', ensureAuthenticated, async (req, res) => {
   try {
-    const messages = await Post.find({ 
+    const messages = await Message.find({ 
       $or: [
         { sender: req.user.id },
         { receiver: req.user.id }
       ] 
-    }).populate('sender receiver', 'username email');
+    }).populate('sender receiver', 'username profilePicture');
 
     res.json(messages);
   } catch (error) {

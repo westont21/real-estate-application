@@ -13,7 +13,8 @@ import AboutUs from './components/AboutUs';
 import Contracts from './components/Contracts';
 import CreatePost from './components/CreatePost';
 import ViewPosts from './components/ViewPosts';
-import ViewUserProfile from './components/ViewUserProfile';
+import UserProfile from './components/UserProfile';
+import UserSearch from './components/UserSearch'; 
 
 const App = () => {
   return (
@@ -24,6 +25,10 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contracts" element={<Contracts />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />
@@ -53,13 +58,15 @@ const App = () => {
           } />
           <Route path="/profile/:userId" element={
             <ProtectedRoute>
-              <ViewUserProfile />
+              <UserProfile />
             </ProtectedRoute>
           } />
 
-          <Route path="/contracts" element={<Contracts />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
+          <Route path="/users/search" element={
+            <ProtectedRoute>
+              <UserSearch />
+            </ProtectedRoute>
+          } />
         </Routes>
         <Footer />
       </div>
