@@ -1,21 +1,24 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer';
 import Home from './components/Home';
 import Login from './components/Login';
 import Profile from './components/Profile';
-import ProtectedRoute from './components/ProtectedRoute'; // Make sure to import your ProtectedRoute
+import ProtectedRoute from './components/ProtectedRoute';
 import ContractCreator from './components/ContractCreator';
 import ContractList from './components/ContractList';
-import Logout from './components/Logout'; // Import the Logout component
-import AboutUs from './components/AboutUs'; // Import the About Us component
-import Contracts from './components/Contracts'; // Import the Contracts component
+import Logout from './components/Logout';
+import AboutUs from './components/AboutUs';
+import Contracts from './components/Contracts';
+import CreatePost from './components/CreatePost';
 
 const App = () => {
   return (
     <AuthProvider>
       <div>
+      <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about-us" element={<AboutUs />} />
@@ -24,7 +27,7 @@ const App = () => {
               <Profile />
             </ProtectedRoute>
           } />
-          <Route path="/contracts/creator" element={
+          <Route path="/contract/creator" element={
             <ProtectedRoute>
               <ContractCreator />
             </ProtectedRoute>
@@ -36,7 +39,12 @@ const App = () => {
           } />
           <Route path="/contracts" element={<Contracts />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} /> {/* Add the route for logout */}
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/create-post" element={
+            <ProtectedRoute>
+              <CreatePost />
+            </ProtectedRoute>
+          } />
         </Routes>
         <Footer />
       </div>

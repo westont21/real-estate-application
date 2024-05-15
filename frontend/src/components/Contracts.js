@@ -5,7 +5,6 @@ import '../styles/Contracts.css'; // Import the CSS file for styling
 const Contracts = () => {
   return (
     <div className="contracts-container">
-      <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
       <h1>Manage Your Contracts</h1>
       <p>
         Welcome to the Contracts section. Here you can create new contracts using our template-based system or view your existing contracts. Choose an option below to get started.

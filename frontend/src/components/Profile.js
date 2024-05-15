@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Profile.css';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 
 
@@ -66,7 +65,6 @@ function Profile() {
    return (
        <div className="container">
            <h1 className="header">Profile</h1>
-           <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link>
            {profilePictureUrl && (
                <img
                    src={profilePictureUrl}

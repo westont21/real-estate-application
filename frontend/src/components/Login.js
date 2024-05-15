@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 
 
@@ -30,7 +29,6 @@ function Login() {
 
    return (
        <div>
-           <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link>
            <h1>Login</h1>
            <button onClick={handleLogin}>Login with Google</button>
        </div>

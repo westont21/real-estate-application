@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import LayneHeadshot from '../assets/images/Layne4x6.jpg'; // Import Layne's headshot
 import WestonHeadshot from '../assets/images/Headshot.jpg'; // Import Weston's headshot
 import '../styles/AboutUs.css'; // Import the CSS file for About Us
@@ -7,7 +6,6 @@ import '../styles/AboutUs.css'; // Import the CSS file for About Us
 const AboutUs = () => {
     return (
         <div className="about-us-container">
-            <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
             <h1>About Us</h1>
             <div className="about-us-content">
                 <div className="profile">

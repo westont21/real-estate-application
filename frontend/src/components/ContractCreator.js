@@ -92,7 +92,6 @@ function ContractCreator() {
 
   return (
     <div>
-      <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
       <h2>Create Contract</h2>
       <form onSubmit={handleSubmit}>
         <label>

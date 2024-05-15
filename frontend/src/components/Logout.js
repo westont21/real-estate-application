@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 
 const LogoutButton = () => {
@@ -29,7 +28,6 @@ const LogoutButton = () => {
 
    return (
        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-           <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link>
            <button onClick={handleLogout}>Logout</button>
        </div>
    );
