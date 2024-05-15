@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/ViewPosts.css';
 
 const ViewPosts = () => {
-  const { auth } = useAuth();
   const [posts, setPosts] = useState([]);
   const [sortBy, setSortBy] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [searchUsername, setSearchUsername] = useState('');
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPosts();
-  }, [sortBy, sortOrder]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const queryParams = new URLSearchParams({ sortBy, sortOrder }).toString();
       const response = await fetch(`https://localhost:5001/api/posts?${queryParams}`, {
@@ -25,7 +21,11 @@ const ViewPosts = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
-  };
+  }, [sortBy, sortOrder]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   const handleSearch = async () => {
     try {
@@ -40,9 +40,18 @@ const ViewPosts = () => {
     }
   };
 
+  const handleProfileClick = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
+  const handleCreatePostClick = () => {
+    navigate('/posts/create');
+  };
+
   return (
     <div className="view-posts-container">
       <h1>View Posts</h1>
+      <button className="create-post-button" onClick={handleCreatePostClick}>Create Post</button>
       <div className="controls">
         <label>
           Sort by:
@@ -73,14 +82,20 @@ const ViewPosts = () => {
       <div className="posts">
         {posts.map((post) => (
           <div key={post._id} className="post">
-            <h3>{post.name}</h3>
+            <div className="post-header">
+              <img
+                src={post.user.profilePicture}
+                alt={post.user.username}
+                className="profile-picture"
+                onClick={() => handleProfileClick(post.user._id)}
+              />
+              <div className="user-info">
+                <h3>{post.name}</h3>
+                <p><strong>Posted by:</strong> {post.user.username}</p>
+              </div>
+            </div>
             <p>{post.description}</p>
-            <p>
-              <strong>Posted by:</strong> {post.user.username} ({post.user.email})
-            </p>
-            <p>
-              <strong>Created at:</strong> {new Date(post.createdAt).toLocaleString()}
-            </p>
+            <p><strong>Created at:</strong> {new Date(post.createdAt).toLocaleString()}</p>
           </div>
         ))}
       </div>

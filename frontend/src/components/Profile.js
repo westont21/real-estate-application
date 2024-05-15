@@ -1,9 +1,7 @@
+//This is for your own profile viewing and setup 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Profile.css';
-
-
-
 
 function Profile() {
    const { auth, setAuth } = useAuth();

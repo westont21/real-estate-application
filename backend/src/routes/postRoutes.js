@@ -34,7 +34,7 @@ router.get('/posts', ensureAuthenticated, async (req, res) => {
     if (sortBy) {
       sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }
-    const posts = await Post.find().sort(sort).populate('user', 'username email');
+    const posts = await Post.find().sort(sort).populate('user', 'username email profilePicture title bio');
     res.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);
@@ -46,7 +46,7 @@ router.get('/posts', ensureAuthenticated, async (req, res) => {
 router.get('/posts/user/:userId', ensureAuthenticated, async (req, res) => {
   try {
     const { userId } = req.params;
-    const posts = await Post.find({ user: userId }).populate('user', 'username email');
+    const posts = await Post.find({ user: userId }).populate('user', 'username email profilePicture title bio');
     res.json(posts);
   } catch (error) {
     console.error('Error fetching posts by user:', error);
@@ -61,7 +61,7 @@ router.get('/posts/search', ensureAuthenticated, async (req, res) => {
     const posts = await Post.find().populate({
       path: 'user',
       match: { username: new RegExp(username, 'i') },
-      select: 'username email'
+      select: 'username email profilePicture title bio'
     }).exec();
 
     const filteredPosts = posts.filter(post => post.user);

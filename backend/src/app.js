@@ -17,6 +17,7 @@ const profileRoutes = require('./routes/profileRoutes');
 const contractRoutes = require('./routes/contractRoutes');
 const postRoutes = require('./routes/postRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 //Logging with Winston and HTTP request logging with Morgan
 const winston = require('winston');
@@ -166,7 +167,8 @@ app.get('/metrics', async (req, res) => {
 });
 
 app.use(authRoutes); 
-app.use(profileRoutes);
+app.use(profileRoutes); // this is for setting up and view your own profile
+app.use('/api', userRoutes); // This is for view other's profiles
 app.use('/api/contracts', contractRoutes);
 app.use('/api', postRoutes);
 app.use('/api', messageRoutes); 

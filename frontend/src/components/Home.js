@@ -37,7 +37,7 @@ function Home() {
                 <div className="content">
                     <h1>Negotiate Directly with Realtors</h1>
                     <p>Find your perfect match in the real estate market and save on commissions.</p>
-                    <Link to="/create-post" className="cta-button">Get Started</Link>
+                    <Link to="/posts/view" className="cta-button">Get Started</Link>
                 </div>
             </section>
 

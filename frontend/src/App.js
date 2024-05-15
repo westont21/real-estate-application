@@ -13,6 +13,7 @@ import AboutUs from './components/AboutUs';
 import Contracts from './components/Contracts';
 import CreatePost from './components/CreatePost';
 import ViewPosts from './components/ViewPosts';
+import ViewUserProfile from './components/ViewUserProfile';
 
 const App = () => {
   return (
@@ -48,6 +49,11 @@ const App = () => {
           <Route path="/posts/view" element={
             <ProtectedRoute>
               <ViewPosts />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile/:userId" element={
+            <ProtectedRoute>
+              <ViewUserProfile />
             </ProtectedRoute>
           } />
 
