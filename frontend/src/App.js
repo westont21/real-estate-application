@@ -12,12 +12,13 @@ import Logout from './components/Logout';
 import AboutUs from './components/AboutUs';
 import Contracts from './components/Contracts';
 import CreatePost from './components/CreatePost';
+import ViewPosts from './components/ViewPosts';
 
 const App = () => {
   return (
     <AuthProvider>
       <div>
-      <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
+        <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -37,14 +38,22 @@ const App = () => {
               <ContractList />
             </ProtectedRoute>
           } />
-          <Route path="/contracts" element={<Contracts />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/create-post" element={
+
+          <Route path="/posts/create" element={
             <ProtectedRoute>
               <CreatePost />
             </ProtectedRoute>
           } />
+
+          <Route path="/posts/view" element={
+            <ProtectedRoute>
+              <ViewPosts />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/contracts" element={<Contracts />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
         <Footer />
       </div>

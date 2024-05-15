@@ -1,0 +1,41 @@
+.view-posts-container {
+    padding: 20px;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .controls label {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .post {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .post h3 {
+    margin: 0 0 10px;
+  }
+  
+  .post p {
+    margin: 5px 0;
+  }
+  

@@ -15,6 +15,9 @@ const User = require('./models/User');
 const authRoutes = require('./routes/authRoutes.js')
 const profileRoutes = require('./routes/profileRoutes');
 const contractRoutes = require('./routes/contractRoutes');
+const postRoutes = require('./routes/postRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+
 //Logging with Winston and HTTP request logging with Morgan
 const winston = require('winston');
 const morgan = require('morgan');
@@ -165,6 +168,8 @@ app.get('/metrics', async (req, res) => {
 app.use(authRoutes); 
 app.use(profileRoutes);
 app.use('/api/contracts', contractRoutes);
+app.use('/api', postRoutes);
+app.use('/api', messageRoutes); 
 
   /* 
   Route to handle verification of user session.  If the user is authenticated,
