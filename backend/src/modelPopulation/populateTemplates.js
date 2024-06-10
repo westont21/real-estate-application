@@ -1,13 +1,6 @@
-/*
-POPULATE THE CONTRACT TEMPLATES: 
-
-cd src/modelPopulation
-node populateTemplates.js
-*/ 
-
 const mongoose = require('mongoose');
 const ContractTemplate = require('../models/ContractTemplate');
-require('dotenv').config({path: "../../.env"});
+require('dotenv').config({ path: "../../.env" });
 
 const templates = [
   {
@@ -25,18 +18,30 @@ const templates = [
       3. **Flexible Payment:** If the transaction is completed within {{timeframe}}, a reduced commission of {{reduced_rate}}% will apply.
 
       4. **e-Signatures:** This contract is considered valid when signed by the authorized representatives:
-      - Realtor: ______________________ Date: {{sign_date}}
-      - Buyer: ______________________ Date: {{sign_date}}
+      - Party 1: ______________________ Date: {{sign_date}}
+      - Party 2: ______________________ Date: {{sign_date}}
+    `
+  },
+  {
+    name: 'Custom Agreement',
+    description: 'Custom agreement with custom terms, dates, and signatures.',
+    content: `
+
+      {{custom_terms}}
+
+      Signatures:
+      - Party 1: ______________________ Date: {{sign_date}}
+      - Party 2: ______________________ Date: {{sign_date}}
     `
   }
 ];
 
 async function populateTemplates() {
-  console.log(process.env.MONGODB_URI)
+  console.log('Connecting to MongoDB...');
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     await ContractTemplate.insertMany(templates);
-    console.log('Templates populated');
+    console.log('Templates populated successfully');
   } catch (err) {
     console.error('Error populating templates:', err);
   } finally {

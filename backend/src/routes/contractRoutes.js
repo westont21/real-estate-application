@@ -15,15 +15,20 @@ const bucket = storage.bucket(process.env.CONTRACT_PDF_BUCKET_NAME);
 
 router.get('/templates', ensureAuthenticated, async (req, res) => {
   try {
-    const templates = await ContractTemplate.find({}, 'name content');
+    const templates = await ContractTemplate.find({}, 'name description content');
     res.json(templates);
   } catch (error) {
+    console.error('Error fetching templates:', error);
     res.status(500).json({ error: 'Failed to fetch templates' });
   }
 });
 
 router.post('/fill-template', ensureAuthenticated, async (req, res) => {
   const { templateId, placeholders } = req.body;
+
+  if (!templateId || !placeholders) {
+    return res.status(400).json({ error: 'Template ID and placeholders are required' });
+  }
 
   try {
     const template = await ContractTemplate.findById(templateId);
@@ -38,16 +43,12 @@ router.post('/fill-template', ensureAuthenticated, async (req, res) => {
     });
     await contract.save();
 
-    console.log('Contract saved:', contract); // Log contract details
-
-    res.json({ message: 'Contract generated and uploaded successfully' });
+    res.json({ message: 'Contract generated and uploaded successfully', contract });
   } catch (error) {
     console.error('Error filling template and generating PDF:', error);
     res.status(500).json({ error: 'Failed to fill template and generate PDF' });
   }
 });
-
-
 
 router.get('/all', ensureAuthenticated, async (req, res) => {
   try {
@@ -67,7 +68,6 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 
     const file = bucket.file(contract.pdfUrl);
 
-    // Get the signed URL with a short expiration
     const options = {
       version: 'v4',
       action: 'read',
@@ -83,4 +83,3 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
 });
 
 module.exports = router;
-

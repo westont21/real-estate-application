@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/ContractCreator.css'; // Import the CSS file for styling
 
 function ContractCreator() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [placeholders, setPlaceholders] = useState({});
-  const [templatePreview, setTemplatePreview] = useState('');
+  const [templateContent, setTemplateContent] = useState('');
 
   useEffect(() => {
-    // Fetch all available templates
     async function fetchTemplates() {
       const response = await fetch('https://localhost:5001/api/contracts/templates', {
         credentials: 'include'
@@ -22,23 +22,20 @@ function ContractCreator() {
   const handleTemplateChange = (e) => {
     const selected = templates.find((template) => template._id === e.target.value);
     if (!selected) {
-      // Handle case where no template is selected
       return;
     }
     setSelectedTemplate(selected._id);
+    setTemplateContent(selected.content);
 
-    // Extract placeholders to be filled from the template content or defined fields
     const placeholderRegex = /{{(.*?)}}/g;
     const matches = [...selected.content.matchAll(placeholderRegex)].map(match => match[1]);
 
-    // Prepare a placeholders object to hold input values
     const placeholdersData = {};
     matches.forEach((placeholder) => {
       placeholdersData[placeholder] = '';
     });
 
     setPlaceholders(placeholdersData);
-    updateTemplatePreview(selected.content, placeholdersData);
   };
 
   const handlePlaceholderChange = (e, placeholder) => {
@@ -46,25 +43,12 @@ function ContractCreator() {
       ...placeholders,
       [placeholder]: e.target.value
     });
-    updateTemplatePreview(templates.find(template => template._id === selectedTemplate).content, {
-      ...placeholders,
-      [placeholder]: e.target.value
-    });
-  };
-
-  const updateTemplatePreview = (content, placeholdersData) => {
-    let filledTemplate = content;
-    for (const [key, value] of Object.entries(placeholdersData)) {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      filledTemplate = filledTemplate.replace(regex, value);
-    }
-    setTemplatePreview(filledTemplate);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedTemplate) {
-      // Handle case where no template is selected
+      alert('Please select a template.');
       return;
     }
     const response = await fetch('https://localhost:5001/api/contracts/fill-template', {
@@ -88,10 +72,32 @@ function ContractCreator() {
     }
   };
 
+  const renderTemplateContent = () => {
+    const contentArray = templateContent.split(/({{.*?}})/g);
+
+    return contentArray.map((part, index) => {
+      const match = part.match(/{{(.*?)}}/);
+      if (match) {
+        const placeholder = match[1];
+        const isCustomTerms = placeholder === 'custom_terms';
+        return (
+          <textarea
+            key={index}
+            value={placeholders[placeholder]}
+            placeholder={placeholder}
+            className={isCustomTerms ? 'placeholder-textarea' : 'placeholder-input'}
+            onChange={(e) => handlePlaceholderChange(e, placeholder)}
+          />
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
-    <div>
+    <div className="contract-creator-container">
       <h2>Create Contract</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="contract-form">
         <label>
           Template:
           <select onChange={handleTemplateChange} value={selectedTemplate}>
@@ -102,30 +108,13 @@ function ContractCreator() {
           </select>
         </label>
 
-        {templatePreview && (
-          <div>
-            <h3>Template Preview</h3>
-            <pre>{templatePreview}</pre>
+        {templateContent && (
+          <div className="template-preview">
+            {renderTemplateContent()}
           </div>
         )}
 
-        {Object.keys(placeholders).length > 0 && (
-          <>
-            <h4>Fill in the Placeholder Details</h4>
-            {Object.keys(placeholders).map((placeholder) => (
-              <label key={placeholder}>
-                {placeholder}:
-                <input
-                  type="text"
-                  value={placeholders[placeholder]}
-                  onChange={(e) => handlePlaceholderChange(e, placeholder)}
-                />
-              </label>
-            ))}
-          </>
-        )}
-
-        <button type='submit'>Generate Contract</button>
+        <button type="submit" className="submit-button">Generate Contract</button>
       </form>
     </div>
   );

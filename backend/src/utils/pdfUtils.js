@@ -1,9 +1,8 @@
+const PDFDocument = require('pdfkit');
 const { Storage } = require('@google-cloud/storage');
-const pdf = require('pdfkit');
-const { v4: uuidv4 } = require('uuid');
+const { Readable } = require('stream');
 require('dotenv').config();
 
-// Initialize Google Cloud Storage
 const storage = new Storage({
   keyFilename: process.env.CONTRACT_SERVICE_ACCOUNT_PATH,
   projectId: process.env.PROJECT_ID
@@ -11,53 +10,47 @@ const storage = new Storage({
 const bucket = storage.bucket(process.env.CONTRACT_PDF_BUCKET_NAME);
 
 async function createFilledContractPDF(templateContent, placeholders) {
-  let filledTemplate = templateContent;
-  for (const [key, value] of Object.entries(placeholders)) {
-    const regex = new RegExp(`{{${key}}}`, 'g');
-    filledTemplate = filledTemplate.replace(regex, value);
-  }
-
-  const doc = new pdf();
-  doc.text(filledTemplate, { align: 'left' });
-  doc.end();
-
   return new Promise((resolve, reject) => {
-    const chunks = [];
-    doc.on('data', (chunk) => chunks.push(chunk));
+    const doc = new PDFDocument();
+    let buffers = [];
+    doc.on('data', buffers.push.bind(buffers));
     doc.on('end', () => {
-      const pdfBuffer = Buffer.concat(chunks);
+      const pdfBuffer = Buffer.concat(buffers);
       resolve(pdfBuffer);
     });
     doc.on('error', reject);
+
+    let content = templateContent;
+    for (const [key, value] of Object.entries(placeholders)) {
+      const regex = new RegExp(`{{${key}}}`, 'g');
+      content = content.replace(regex, value);
+    }
+
+    doc.text(content);
+    doc.end();
   });
 }
 
 async function uploadToGoogleCloud(pdfBuffer, userId) {
-  const fileName = `contracts/${userId}/${uuidv4()}.pdf`;
+  const fileName = `contracts/${userId}/${Date.now()}.pdf`;
   const file = bucket.file(fileName);
 
-  // Create a writable stream to pipe the PDF buffer
-  const stream = file.createWriteStream({
-    metadata: {
-      contentType: 'application/pdf'
-    }
+  const stream = Readable.from(pdfBuffer);
+
+  await new Promise((resolve, reject) => {
+    const writeStream = file.createWriteStream({
+      metadata: {
+        contentType: 'application/pdf',
+      },
+      resumable: false,
+    });
+
+    stream.pipe(writeStream)
+      .on('finish', resolve)
+      .on('error', reject);
   });
 
-  // Handle stream events
-  stream.on('error', (err) => {
-    console.error('Error uploading PDF to Google Cloud Storage:', err);
-    throw err;
-  });
-
-  stream.end(pdfBuffer);
-
-  console.log('File uploaded to:', fileName); // Log the file path
-
-  // Return the path to the file
   return fileName;
 }
 
-module.exports = {
-  createFilledContractPDF,
-  uploadToGoogleCloud
-};
+module.exports = { createFilledContractPDF, uploadToGoogleCloud };
