@@ -14,6 +14,11 @@ const User = require('./models/User');
 //Route Imports
 const authRoutes = require('./routes/authRoutes.js')
 const profileRoutes = require('./routes/profileRoutes');
+const contractRoutes = require('./routes/contractRoutes');
+const postRoutes = require('./routes/postRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 //Logging with Winston and HTTP request logging with Morgan
 const winston = require('winston');
 const morgan = require('morgan');
@@ -62,6 +67,13 @@ const logger = winston.createLogger({
     new winston.transports.File({ filename: 'combined.log' })
   ],
 });
+// Logging configuration
+logger.exceptions.handle(
+  new winston.transports.File({ filename: 'exceptions.log' })
+);
+process.on('unhandledRejection', (reason, promise) => {
+  throw reason; // Will be handled by winston
+});
 // Morgan setup to use Winston
 app.use(morgan('combined', { stream: { write: message => logger.info(message) } }));
 // Example of manual logging
@@ -77,7 +89,7 @@ mongoose.connect(process.env.MONGODB_URI).then(() => console.log("MongoDB connec
   .catch(err => console.log(err));
 // Use existing Mongoose connection for session store
 app.use(session({
-  secret: 'your_secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
@@ -85,8 +97,8 @@ app.use(session({
     collectionName: 'sessions'
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Only set secure in production
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Adjust for development
+    secure: true, // Use true in production
+    sameSite: 'None', // Adjust as needed
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -155,7 +167,11 @@ app.get('/metrics', async (req, res) => {
 });
 
 app.use(authRoutes); 
-app.use(profileRoutes);
+app.use(profileRoutes); // this is for setting up and view your own profile
+app.use('/api', userRoutes); // This is for view other's profiles
+app.use('/api/contracts', contractRoutes);
+app.use('/api', postRoutes);
+app.use('/api', messageRoutes); 
 
   /* 
   Route to handle verification of user session.  If the user is authenticated,

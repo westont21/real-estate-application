@@ -2,12 +2,12 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 
-//Server Side Auth
 const ensureAuthenticated = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        return res.status(403).json({ message: "Unauthorized" });
-    }
-    next();
+  if (!req.isAuthenticated()) {
+    logger.warn('Unauthorized access attempt');
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+  next();
 };
 
 router.get('/logout', ensureAuthenticated, (req, res) => {
