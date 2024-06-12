@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import '../styles/ContractCreator.css';
 
-function ContractCreator() {
+function ContractPreview() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [placeholders, setPlaceholders] = useState({});
@@ -61,12 +61,8 @@ function ContractCreator() {
       alert('Please select a template.');
       return;
     }
-    if (!placeholders.realtor_signature) {
-      alert('Please add your signature.');
-      return;
-    }
-
-    const response = await fetch('https://localhost:5001/api/contracts/fill-template', {
+  
+    const response = await fetch('https://localhost:5001/api/contracts/view-pdf', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -77,15 +73,17 @@ function ContractCreator() {
         placeholders
       })
     });
-
+  
     if (response.ok) {
-      const data = await response.json();
-      alert(data.message);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
     } else {
       const data = await response.json();
       alert(`Error: ${data.error}`);
     }
   };
+  
 
   const renderTemplateContent = () => {
     const contentArray = templateContent.split(/({{.*?}})/g);
@@ -126,7 +124,7 @@ function ContractCreator() {
 
   return (
     <div className="contract-creator-container">
-      <h2>Create Contract</h2>
+      <h2>Preview Contract</h2>
       <form onSubmit={handleSubmit} className="contract-form">
         <label>
           Template:
@@ -154,10 +152,10 @@ function ContractCreator() {
           <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
         </div>
 
-        <button type="submit" className="submit-button">Generate Contract</button>
+        <button type="submit" className="submit-button">Preview Contract</button>
       </form>
     </div>
   );
 }
 
-export default ContractCreator;
+export default ContractPreview;

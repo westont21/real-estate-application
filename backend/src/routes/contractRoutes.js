@@ -6,7 +6,6 @@ const Contract = require('../models/Contract');
 const { createFilledContractPDF, uploadToGoogleCloud } = require('../utils/pdfUtils');
 const ensureAuthenticated = require('./authRoutes');
 
-// Initialize Google Cloud Storage
 const storage = new Storage({
   keyFilename: process.env.CONTRACT_SERVICE_ACCOUNT_PATH,
   projectId: process.env.PROJECT_ID
@@ -50,6 +49,31 @@ router.post('/fill-template', ensureAuthenticated, async (req, res) => {
   }
 });
 
+router.post('/add-client-signature/:id', ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const { signature } = req.body;
+
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found' });
+    }
+
+    if (contract.isFinalized) {
+      return res.status(403).json({ error: 'Contract is already finalized' });
+    }
+
+    contract.clientSignature = signature;
+    contract.isFinalized = true;
+    await contract.save();
+
+    res.json({ message: 'Client signature added and contract finalized', contract });
+  } catch (error) {
+    console.error('Error adding client signature:', error);
+    res.status(500).json({ error: 'Failed to add client signature' });
+  }
+});
+
 router.get('/all', ensureAuthenticated, async (req, res) => {
   try {
     const contracts = await Contract.find({ userId: req.user.id });
@@ -82,4 +106,34 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+/////
+// Temporary route for testing PDF generation without uploading
+router.post('/view-pdf', ensureAuthenticated, async (req, res) => {
+  const { templateId, placeholders } = req.body;
+
+  try {
+    const template = await ContractTemplate.findById(templateId);
+    if (!template) return res.status(404).json({ error: 'Template not found' });
+
+    // Capture metadata
+    const metadata = {
+      signedBy: req.user.id,
+      signedAt: new Date(),
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+    };
+    placeholders.metadata = metadata;
+
+    const pdfBuffer = await createFilledContractPDF(template.content, placeholders);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename=generated.pdf');
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    res.status(500).json({ error: 'Failed to generate PDF' });
+  }
+});
+
+////
 module.exports = router;
