@@ -28,3 +28,22 @@ cd ..
 For Production SSL Certificate: Obtain your SSL certificate from a trusted CA for your production environment.
 Database Security: Ensure that your database connections are also secure and use encrypted connections if possible.
 API Security Best Practices: Consider other security practices such as API throttling, more sophisticated rate limiting, and using OAuth for better authentication mechanisms. 
+
+
+# Contract TDs: 
+Permission Management:
+
+Use Google Cloud IAM policies to control who can view or modify the contracts.
+Ensure that shared contracts can only be viewed by the clients they are shared with.
+Audit Logging:
+
+Maintain logs of who shared the contract, who viewed it, and who signed it. This can help in case of disputes.
+Data Integrity:
+
+Once a contract is signed, it should be immutable. Any changes should create a new version of the contract.
+Security:
+
+Use signed URLs with expiration times for accessing the contracts. Ensure that the URLs cannot be guessed or reused.
+Compliance:
+
+Ensure that your solution complies with legal requirements for electronic signatures and document management in your jurisdiction.

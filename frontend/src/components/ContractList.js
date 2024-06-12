@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function ContractList() {
   const [contracts, setContracts] = useState([]);
   const [contractUrl, setContractUrl] = useState('');
+  const navigate = useNavigate();
+  const { auth } = useAuth();
 
   useEffect(() => {
     async function fetchContracts() {
@@ -38,6 +42,14 @@ function ContractList() {
     }
   };
 
+  const handleShareContract = (id) => {
+    navigate(`/share-contract/${id}`);
+  };
+
+  const handleSignContract = (id) => {
+    navigate(`/sign-contract/${id}`);
+  };
+
   return (
     <div>
       <h2>Your Contracts</h2>
@@ -50,6 +62,15 @@ function ContractList() {
               <button onClick={() => handleViewContract(contract._id)}>
                 View Contract
               </button>
+              {contract.userId === auth.user?.id ? (
+                <button onClick={() => handleShareContract(contract._id)}>
+                  Share Contract
+                </button>
+              ) : contract.sharedWith.includes(auth.user?.id) && !contract.isFinalized ? (
+                <button onClick={() => handleSignContract(contract._id)}>
+                  Sign Contract
+                </button>
+              ) : null}
             </li>
           ))}
         </ul>

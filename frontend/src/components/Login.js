@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 
-
-
 function Login() {
    const navigate = useNavigate();
    const location = useLocation();

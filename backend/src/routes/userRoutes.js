@@ -3,6 +3,17 @@ const router = express.Router();
 const User = require('../models/User');
 const ensureAuthenticated = require('./authRoutes');
 
+// Get all users
+router.get('/users', ensureAuthenticated, async (req, res) => {
+  try {
+    const users = await User.find({}, 'username profilePicture');
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 // Search users by name
 router.get('/users/search', ensureAuthenticated, async (req, res) => {
   try {

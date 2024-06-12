@@ -30,7 +30,7 @@ async function createFilledContractPDF(templateContent, placeholders) {
         match.forEach((placeholder) => {
           const key = placeholder.replace(/{{|}}/g, '');
           const value = placeholders[key] || '';
-          if (key.includes('signature') && value.startsWith('data:image/')) {
+          if ((key.includes('realtor_signature') || key.includes('client_signature')) && value.startsWith('data:image/')) {
             const imgBuffer = Buffer.from(value.split(',')[1], 'base64');
             const imageWidth = 150; // Width of the signature image
             const imageHeight = 50; // Height of the signature image

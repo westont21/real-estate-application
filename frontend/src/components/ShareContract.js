@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/UserSearch.css';
 
-const UserSearch = () => {
+const ShareContract = () => {
+  const { contractId } = useParams();
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
@@ -37,6 +38,29 @@ const UserSearch = () => {
     }
   };
 
+  const handleShare = async (clientId) => {
+    try {
+      const response = await fetch(`https://localhost:5001/api/contracts/share-contract/${contractId}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ clientId })
+      });
+
+      if (response.ok) {
+        alert('Contract shared with client successfully!');
+      } else {
+        const data = await response.json();
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error sharing contract:', error);
+      alert('Failed to share contract.');
+    }
+  };
+
   return (
     <div className="user-search-container">
       <input
@@ -48,9 +72,10 @@ const UserSearch = () => {
       <button onClick={handleSearch}>Search</button>
       <div className="user-list">
         {users.map((user) => (
-          <div key={user._id} className="user-item" onClick={() => navigate(`/profile/${user._id}`)}>
+          <div key={user._id} className="user-item">
             <img src={user.profilePicture} alt={user.username} className="profile-picture" />
             <span>{user.username}</span>
+            <button onClick={() => handleShare(user._id)}>Share</button>
           </div>
         ))}
       </div>
@@ -58,4 +83,4 @@ const UserSearch = () => {
   );
 };
 
-export default UserSearch;
+export default ShareContract;

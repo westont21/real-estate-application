@@ -16,6 +16,9 @@ import CreatePost from './components/CreatePost';
 import ViewPosts from './components/ViewPosts';
 import UserProfile from './components/UserProfile';
 import UserSearch from './components/UserSearch';
+import ShareContract from './components/ShareContract';
+import SignContract from './components/SignContract';
+
 
 import ContractPreview from './components/ContractPreview';
 
@@ -55,6 +58,11 @@ const App = () => {
             </ProtectedRoute>
           } />
 
+          <Route path="/share-contract/:contractId" element={<ShareContract />} />
+          <Route path="/sign-contract/:contractId" element={<SignContract />} />    
+
+
+
           <Route path="/posts/create" element={
             <ProtectedRoute>
               <CreatePost />
@@ -83,8 +91,6 @@ const App = () => {
               <ContractPreview />
             </ProtectedRoute>
           } />
-
-
         </Routes>
         <Footer />
       </div>
