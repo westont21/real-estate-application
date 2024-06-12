@@ -18,8 +18,8 @@ const templates = [
       3. **Flexible Payment:** If the transaction is completed within {{timeframe}}, a reduced commission of {{reduced_rate}}% will apply.
 
       4. **e-Signatures:** This contract is considered valid when signed by the authorized representatives:
-      - Party 1: ______________________ Date: {{sign_date}}
-      - Party 2: ______________________ Date: {{sign_date}}
+      - Realtor Signature: {{realtor_signature}} Date: {{sign_date}}
+      - Client Signature: {{client_signature}} Date: {{sign_date}}
     `
   },
   {
@@ -30,8 +30,8 @@ const templates = [
       {{custom_terms}}
 
       Signatures:
-      - Party 1: ______________________ Date: {{sign_date}}
-      - Party 2: ______________________ Date: {{sign_date}}
+      - Realtor Signature: {{realtor_signature}} Date: {{sign_date}}
+      - Client Signature: {{client_signature}} Date: {{sign_date}}
     `
   }
 ];

@@ -1,4 +1,4 @@
-.contract-creator-container {
+.client-signature-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
@@ -8,36 +8,24 @@
     border-radius: 10px;
   }
   
-  .contract-creator-container h2 {
+  .client-signature-container h2 {
     text-align: center;
     margin-bottom: 20px;
   }
   
-  .contract-form {
+  .signature-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
   
-  .contract-form label {
+  .signature-form label {
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
   
-  .template-preview {
-    background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    font-family: 'Courier New', Courier, monospace;
-    white-space: pre-wrap;
-    line-height: 1.5;
-  }
-  
-  .placeholder-input {
+  .signature-input {
     display: inline;
     width: auto;
     min-width: 50px;
@@ -50,33 +38,11 @@
     background-color: transparent;
   }
   
-  .placeholder-input:focus {
+  .signature-input:focus {
     outline: none;
     border-bottom: 1px solid #007BFF;
   }
   
-  .signature-placeholder {
-    display: inline-block;
-    width: 150px;
-    border-bottom: 1px solid #000;
-    cursor: pointer;
-    color: #007BFF;
-  }
-  
-  .signature-image {
-    display: block;
-    max-width: 150px;
-    max-height: 50px;
-  }
-  
-  .signature-canvas {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-    height: 200px;
-  }
-  
-  .save-button,
   .submit-button {
     padding: 10px 20px;
     background-color: #007BFF;
@@ -85,11 +51,14 @@
     border-radius: 5px;
     cursor: pointer;
     align-self: flex-start;
-    margin-top: 10px;
   }
   
-  .save-button:hover,
-  .submit-button:hover {
+  .submit-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .submit-button:hover:not(:disabled) {
     background-color: #0056b3;
   }
   

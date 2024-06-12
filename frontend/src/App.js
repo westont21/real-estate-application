@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Profile from './components/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
 import ContractCreator from './components/ContractCreator';
+import ClientSignature from './components/ClientSignature';
 import ContractList from './components/ContractList';
 import Logout from './components/Logout';
 import AboutUs from './components/AboutUs';
@@ -14,7 +15,12 @@ import Contracts from './components/Contracts';
 import CreatePost from './components/CreatePost';
 import ViewPosts from './components/ViewPosts';
 import UserProfile from './components/UserProfile';
-import UserSearch from './components/UserSearch'; 
+import UserSearch from './components/UserSearch';
+import ShareContract from './components/ShareContract';
+import SignContract from './components/SignContract';
+
+
+import ContractPreview from './components/ContractPreview';
 
 const App = () => {
   return (
@@ -39,11 +45,23 @@ const App = () => {
               <ContractCreator />
             </ProtectedRoute>
           } />
+
+          <Route path="/contract/sign/:id" element={
+            <ProtectedRoute>
+              <ClientSignature />
+            </ProtectedRoute>
+          } />
+
           <Route path="/contracts/list" element={
             <ProtectedRoute>
               <ContractList />
             </ProtectedRoute>
           } />
+
+          <Route path="/share-contract/:contractId" element={<ShareContract />} />
+          <Route path="/sign-contract/:contractId" element={<SignContract />} />    
+
+
 
           <Route path="/posts/create" element={
             <ProtectedRoute>
@@ -65,6 +83,12 @@ const App = () => {
           <Route path="/users/search" element={
             <ProtectedRoute>
               <UserSearch />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/test" element={
+            <ProtectedRoute>
+              <ContractPreview />
             </ProtectedRoute>
           } />
         </Routes>
