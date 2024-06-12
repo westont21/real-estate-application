@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import '../styles/Messaging.css';
+import '../styles/MessageForm.css';
 
-const MessageForm = ({ onMessageSent }) => {
-  const [receiverId, setReceiverId] = useState('');
+const MessageForm = ({ receiverId, onMessageSent }) => {
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -19,7 +18,7 @@ const MessageForm = ({ onMessageSent }) => {
       });
       if (!response.ok) throw new Error('Failed to send message');
       const data = await response.json();
-      onMessageSent(data);
+      if (onMessageSent) onMessageSent(data);
       setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -28,26 +27,13 @@ const MessageForm = ({ onMessageSent }) => {
 
   return (
     <form onSubmit={handleSubmit} className="message-form">
-      <label>
-        To:
-        <input
-          type="text"
-          value={receiverId}
-          onChange={(e) => setReceiverId(e.target.value)}
-          placeholder="Receiver ID"
-          required
-        />
-      </label>
-      <label>
-        Message:
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Enter your message"
-          required
-        />
-      </label>
-      <button type="submit">Send Message</button>
+      <textarea
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Enter your message"
+        required
+      />
+      <button type="submit" className="btn">Send Message</button>
     </form>
   );
 };

@@ -1,0 +1,73 @@
+/* src/styles/ComposeMessage.css */
+
+.compose-message-bar {
+    position: fixed;
+    bottom: 0;
+    right: 600px; /* Adjust position to be next to the messaging bar */
+    width: 300px; /* Adjust width as needed */
+    height: 600px; /* Adjust height as needed */
+    background-color: #ffffff; /* Change background color to white */
+    color: black;
+    border: 1px solid #ccc;
+    border-top-left-radius: 10px;
+    transition: transform 0.3s ease;
+    z-index: 1000; /* Ensure it is above other elements */
+  }
+  
+  .compose-message-header {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #f1f1f1;
+    border-top-left-radius: 10px;
+    position: relative;
+  }
+  
+  .compose-message {
+    padding: 10px;
+  }
+  
+  .compose-message form {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .compose-message input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .compose-message button {
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .compose-message .search-results {
+    margin-top: 10px;
+  }
+  
+  .compose-message .user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .compose-message .user-item:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .compose-message .profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  

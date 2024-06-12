@@ -63,7 +63,7 @@ const Messaging = ({ receiverId }) => {
           placeholder="Enter your message"
           required
         />
-        <button type="submit">Send Message</button>
+        <button type="submit" className="btn">Send Message</button>
       </form>
     </div>
   );

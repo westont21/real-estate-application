@@ -1,0 +1,37 @@
+/* src/styles/MessageForm.css */
+
+.message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+  }
+  
+  .message-form textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none;
+    height: 100px;
+    font-size: 1em;
+    color: #333;
+  }
+  
+  .message-form .btn {
+    align-self: flex-end;
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .message-form .btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  

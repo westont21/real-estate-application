@@ -1,0 +1,64 @@
+/* src/styles/MessageThread.css */
+
+.message-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .message-thread-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+  }
+  
+  .message-thread-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .message {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .message-content {
+    flex-grow: 1;
+  }
+  
+  .message-content strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1em;
+    color: #333;
+  }
+  
+  .message-content p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  .message-time {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.75em;
+    color: #888;
+  }
+  

@@ -1,39 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import '../styles/Messaging.css';
+import React, { useEffect, useState, useCallback } from 'react';
+import '../styles/MessageList.css';
 
-const MessageList = () => {
-  const [messages, setMessages] = useState([]);
+const MessageList = ({ onSelectUser }) => {
+  const [uniqueUsers, setUniqueUsers] = useState([]);
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await fetch('https://localhost:5001/api/messages', {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch messages');
       const data = await response.json();
-      setMessages(data);
+      extractUniqueUsers(data);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  const extractUniqueUsers = (messages) => {
+    const users = {};
+    messages.forEach((message) => {
+      const user = message.sender;
+      if (!users[user._id]) {
+        users[user._id] = user;
+      }
+    });
+    setUniqueUsers(Object.values(users));
   };
 
   return (
     <div className="message-list">
-      {messages.map((message) => (
-        <div key={message._id} className="message">
+      {uniqueUsers.map((user) => (
+        <div key={user._id} className="message" onClick={() => onSelectUser(user)}>
           <img
-            src={message.sender.profilePicture}
-            alt={message.sender.username}
+            src={user.profilePicture}
+            alt={user.username}
             className="profile-picture"
           />
           <div className="message-content">
-            <strong>{message.sender.username}</strong>
-            <p>{message.message}</p>
-            <span className="message-time">{new Date(message.createdAt).toLocaleString()}</span>
+            <strong>{user.username}</strong>
           </div>
         </div>
       ))}

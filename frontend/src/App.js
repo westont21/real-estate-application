@@ -18,80 +18,33 @@ import UserProfile from './components/UserProfile';
 import UserSearch from './components/UserSearch';
 import ShareContract from './components/ShareContract';
 import SignContract from './components/SignContract';
-
-
 import ContractPreview from './components/ContractPreview';
+import MessagingBar from './components/MessagingBar'; // Ensure correct import
 
 const App = () => {
   return (
     <AuthProvider>
       <div>
         <Link to="/" style={{ color: 'black', textDecoration: 'none', position: 'absolute', top: '10px', left: '10px' }}>Home</Link> {/* Add Link for Home */}
-
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contracts" element={<Contracts />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/contract/creator" element={
-            <ProtectedRoute>
-              <ContractCreator />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/contract/sign/:id" element={
-            <ProtectedRoute>
-              <ClientSignature />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/contracts/list" element={
-            <ProtectedRoute>
-              <ContractList />
-            </ProtectedRoute>
-          } />
-
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/contract/creator" element={<ProtectedRoute><ContractCreator /></ProtectedRoute>} />
+          <Route path="/contract/sign/:id" element={<ProtectedRoute><ClientSignature /></ProtectedRoute>} />
+          <Route path="/contracts/list" element={<ProtectedRoute><ContractList /></ProtectedRoute>} />
           <Route path="/share-contract/:contractId" element={<ShareContract />} />
-          <Route path="/sign-contract/:contractId" element={<SignContract />} />    
-
-
-
-          <Route path="/posts/create" element={
-            <ProtectedRoute>
-              <CreatePost />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/posts/view" element={
-            <ProtectedRoute>
-              <ViewPosts />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile/:userId" element={
-            <ProtectedRoute>
-              <UserProfile />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/users/search" element={
-            <ProtectedRoute>
-              <UserSearch />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/test" element={
-            <ProtectedRoute>
-              <ContractPreview />
-            </ProtectedRoute>
-          } />
+          <Route path="/sign-contract/:contractId" element={<SignContract />} />
+          <Route path="/posts/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
+          <Route path="/posts/view" element={<ProtectedRoute><ViewPosts /></ProtectedRoute>} />
+          <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+          <Route path="/users/search" element={<ProtectedRoute><UserSearch /></ProtectedRoute>} />
+          <Route path="/test" element={<ProtectedRoute><ContractPreview /></ProtectedRoute>} />
         </Routes>
+        <MessagingBar /> {/* Add MessagingBar component */}
         <Footer />
       </div>
     </AuthProvider>
