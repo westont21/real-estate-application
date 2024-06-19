@@ -29,7 +29,7 @@ async function createFilledContractPDF(templateContent, placeholders) {
       if (match) {
         match.forEach((placeholder) => {
           const key = placeholder.replace(/{{|}}/g, '');
-          const value = placeholders[key] || '';
+          const value = placeholders.get(key) || '______________________';
           if ((key.includes('realtor_signature') || key.includes('client_signature')) && value.startsWith('data:image/')) {
             const imgBuffer = Buffer.from(value.split(',')[1], 'base64');
             const imageWidth = 150; // Width of the signature image
@@ -39,11 +39,10 @@ async function createFilledContractPDF(templateContent, placeholders) {
             // Render text before the signature
             if (parts[0]) {
               doc.text(parts[0].trim(), { continued: true });
-              doc.text(' ', { continued: true }); // Add a space for better formatting
             }
             
             // Move down the page to avoid overlapping
-            doc.moveDown(1);
+            doc.moveDown(1)
 
             // Render the signature image
             doc.image(imgBuffer, doc.x, doc.y, { width: imageWidth, height: imageHeight });

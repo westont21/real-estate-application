@@ -74,7 +74,8 @@ function ContractCreator() {
       },
       body: JSON.stringify({
         templateId: selectedTemplate,
-        placeholders
+        placeholders,
+        signature: placeholders.realtor_signature
       })
     });
 

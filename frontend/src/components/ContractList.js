@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 
 function ContractList() {
   const [contracts, setContracts] = useState([]);
-  const [contractUrl, setContractUrl] = useState('');
   const navigate = useNavigate();
   const { auth } = useAuth();
 
@@ -27,19 +26,8 @@ function ContractList() {
     fetchContracts();
   }, []);
 
-  const handleViewContract = async (id) => {
-    try {
-      const response = await fetch(`https://localhost:5001/api/contracts/${id}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch contract URL');
-      }
-      const data = await response.json();
-      setContractUrl(data.url);
-    } catch (error) {
-      console.error('Error fetching contract URL:', error);
-    }
+  const handleViewContract = (id) => {
+    navigate(`/view-contract/${id}`);
   };
 
   const handleShareContract = (id) => {
@@ -74,9 +62,6 @@ function ContractList() {
             </li>
           ))}
         </ul>
-      )}
-      {contractUrl && (
-        <iframe title="Contract PDF" src={contractUrl} style={{ width: '100%', height: '1000px' }} />
       )}
     </div>
   );
