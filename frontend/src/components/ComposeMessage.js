@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/ComposeMessage.css';
 
 const ComposeMessage = ({ onSelectUser }) => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await fetch('https://localhost:5001/api/users', {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Failed to fetch users');
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+
+    fetchUsers();
+  }, []);
+
+  const handleSearch = async () => {
     try {
-      const response = await fetch(`https://localhost:5001/api/users?query=${query}`, {
+      const response = await fetch(`https://localhost:5001/api/users/search?query=${query}`, {
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to fetch users');
+      if (!response.ok) throw new Error('Failed to search users');
       const data = await response.json();
-      setResults(data);
+      setUsers(data);
     } catch (error) {
       console.error('Error searching users:', error);
     }
@@ -21,18 +37,18 @@ const ComposeMessage = ({ onSelectUser }) => {
 
   return (
     <div className="compose-message">
-      <form onSubmit={handleSearch}>
+      <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
         <input
           type="text"
+          placeholder="Search for users"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for users"
           required
         />
         <button type="submit">Search</button>
       </form>
       <div className="search-results">
-        {results.map((user) => (
+        {users.map((user) => (
           <div key={user._id} className="user-item" onClick={() => onSelectUser(user)}>
             <img src={user.profilePicture} alt={user.username} className="profile-picture" />
             <span>{user.username}</span>

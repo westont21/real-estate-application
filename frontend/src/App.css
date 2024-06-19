@@ -1,21 +1,20 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  height: 100%; /* Ensure the App component takes full height */
+  display: flex;
+  flex-direction: column;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  flex: 0 0 auto; /* Ensure the header does not grow */
+  min-height: 60px; /* Set a minimum height */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,15 +23,26 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.App-footer {
+  flex: 0 0 auto; /* Ensure the footer does not grow */
+  background-color: #282c34;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-content {
+  flex: 1 1 auto; /* Ensure content takes the remaining space */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  padding: 20px;
 }
+
+.App-footer {
+  flex: 0 0 auto;
+  background-color: #282c34;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  position: relative;
+}
+
