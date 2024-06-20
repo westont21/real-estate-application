@@ -21,6 +21,7 @@ async function createFilledContractPDF(templateContent, placeholders) {
     doc.on('error', reject);
 
     const lines = templateContent.split('\n');
+
     lines.forEach((line) => {
       let currentLine = line;
 
@@ -29,7 +30,8 @@ async function createFilledContractPDF(templateContent, placeholders) {
       if (match) {
         match.forEach((placeholder) => {
           const key = placeholder.replace(/{{|}}/g, '');
-          const value = placeholders.get(key) || '______________________';
+          const value = (typeof placeholders.get === 'function' ? placeholders.get(key) : placeholders[key]) || '______________________';
+          
           if ((key.includes('realtor_signature') || key.includes('client_signature')) && value.startsWith('data:image/')) {
             const imgBuffer = Buffer.from(value.split(',')[1], 'base64');
             const imageWidth = 150; // Width of the signature image
@@ -40,32 +42,34 @@ async function createFilledContractPDF(templateContent, placeholders) {
             if (parts[0]) {
               doc.text(parts[0].trim(), { continued: true });
             }
-            
-            // Move down the page to avoid overlapping
-            doc.moveDown(1)
 
             // Render the signature image
             doc.image(imgBuffer, doc.x, doc.y, { width: imageWidth, height: imageHeight });
 
-            // Move down the page to avoid overlapping
+            // Move the y position down by the height of the image to avoid overlapping
             doc.moveDown(imageHeight / 10);
 
             // Render text after the signature
             if (parts[1]) {
-              doc.text(parts[1].trim());
+              currentLine = parts[1];
+            } else {
+              currentLine = '';
             }
-
-            // Clear current line for signature handling
-            currentLine = '';
           } else {
             currentLine = currentLine.replace(placeholder, value);
           }
         });
       }
 
+      // Ensure placeholders are replaced before rendering
+      currentLine = currentLine.replace(/{{(.*?)}}/g, (_, key) => {
+        const value = (typeof placeholders.get === 'function' ? placeholders.get(key) : placeholders[key]) || '______________________';
+        return value;
+      });
+
       // Render the line with replaced placeholders
       if (currentLine) {
-        doc.text(currentLine.trim(), { paragraphGap: 10 });
+        doc.text(currentLine.trim(), { paragraphGap: 10, continued: false });
       }
     });
 
@@ -95,4 +99,10 @@ async function uploadToGoogleCloud(pdfBuffer, userId) {
   return fileName;
 }
 
-module.exports = { createFilledContractPDF, uploadToGoogleCloud };
+async function deleteFromGoogleCloud(filePath) {
+  const file = bucket.file(filePath);
+
+  await file.delete();
+}
+
+module.exports = { createFilledContractPDF, uploadToGoogleCloud, deleteFromGoogleCloud };

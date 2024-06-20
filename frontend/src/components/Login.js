@@ -12,7 +12,6 @@ function Login() {
    // Redirect if already logged in
    useEffect(() => {
        if (auth.isAuthenticated) {
-           console.log('ALREADY LOGGED IN:', auth);
            const from = location.state?.from?.pathname || "/";
            navigate(from, { replace: true }); // Redirect to the intended route or home if no redirect is needed
        }

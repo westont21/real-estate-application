@@ -49,10 +49,17 @@ function ContractPreview() {
 
   const saveSignature = () => {
     const signatureData = sigCanvas.current.toDataURL();
+    const signDate = new Date().toLocaleString(); // Capture the current date and time
+
     setPlaceholders({
       ...placeholders,
-      realtor_signature: signatureData
+      realtor_signature: signatureData,
+      realtor_sign_date: signDate // Automatically fill the realtor_sign_date placeholder
     });
+  };
+
+  const eraseSignature = () => {
+    sigCanvas.current.clear();
   };
 
   const handleSubmit = async (e) => {
@@ -61,7 +68,7 @@ function ContractPreview() {
       alert('Please select a template.');
       return;
     }
-  
+
     const response = await fetch('https://localhost:5001/api/contracts/view-pdf', {
       method: 'POST',
       credentials: 'include',
@@ -73,7 +80,7 @@ function ContractPreview() {
         placeholders
       })
     });
-  
+
     if (response.ok) {
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -83,7 +90,6 @@ function ContractPreview() {
       alert(`Error: ${data.error}`);
     }
   };
-  
 
   const renderTemplateContent = () => {
     const contentArray = templateContent.split(/({{.*?}})/g);
@@ -96,7 +102,7 @@ function ContractPreview() {
         return (
           <span key={index} className="inline-input">
             {isSignature ? (
-              <span className="signature-placeholder" onClick={saveSignature}>
+              <span className="signature-placeholder">
                 {placeholders[placeholder] ? (
                   <img
                     src={placeholders[placeholder]}
@@ -113,6 +119,7 @@ function ContractPreview() {
                 placeholder={placeholder}
                 className="placeholder-input"
                 onChange={(e) => handlePlaceholderChange(e, placeholder)}
+                readOnly={placeholder.includes('sign_date')} // Make the sign_date placeholders read-only
               />
             )}
           </span>
@@ -149,7 +156,10 @@ function ContractPreview() {
             penColor="black"
             canvasProps={{ className: 'signature-canvas' }}
           />
-          <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
+          <div className="button-group">
+            <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
+            <button type="button" onClick={eraseSignature} className="erase-button">Erase Signature</button>
+          </div>
         </div>
 
         <button type="submit" className="submit-button">Preview Contract</button>

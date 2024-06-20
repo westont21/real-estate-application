@@ -1,39 +1,155 @@
 .contract-creator-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .template-preview {
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    white-space: pre-wrap; /* This preserves whitespace */
-  }
-  
-  .signature-section {
-    margin-top: 20px;
-  }
-  
-  .signature-canvas {
-    border: 1px solid #000;
-    width: 100%;
-    height: 150px;
-  }
-  
-  .save-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .save-button:hover {
-    background-color: #0056b3;
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.contract-creator-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.view-contracts-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+.view-contracts-button:hover {
+  background-color: #0056b3;
+}
+
+.contract-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contract-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.template-preview {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.placeholder-input {
+  display: inline;
+  width: auto;
+  min-width: 50px;
+  max-width: 150px;
+  border: none;
+  border-bottom: 1px solid #000;
+  margin: 0 3px;
+  padding: 2px 4px;
+  font-size: 14px;
+  background-color: transparent;
+}
+
+.placeholder-input:focus {
+  outline: none;
+  border-bottom: 1px solid #007BFF;
+}
+
+.signature-placeholder {
+  display: inline-block;
+  width: 150px;
+  border-bottom: 1px solid #000;
+  cursor: pointer;
+  color: #007BFF;
+}
+
+.signature-image {
+  display: block;
+  max-width: 150px;
+  max-height: 50px;
+}
+
+.signature-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.signature-canvas {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+  height: 200px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.save-button,
+.submit-button,
+.remove-button,
+.share-button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+.save-button:hover,
+.submit-button:hover,
+.remove-button:hover,
+.share-button:hover {
+  background-color: #0056b3;
+}
+
+.erase-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 10px;
+}
+
+.erase-button:hover {
+  background-color: #c82333;
+}
+
+.remove-button {
+  background-color: #dc3545;
+}
+
+.remove-button:hover {
+  background-color: #c82333;
+}

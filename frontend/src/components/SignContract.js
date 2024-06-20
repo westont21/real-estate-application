@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import SignatureCanvas from 'react-signature-canvas';
 import '../styles/SignContract.css';
 
 function SignContract() {
   const { contractId } = useParams();
+  const navigate = useNavigate();
   const [contract, setContract] = useState(null);
-  const [placeholders, setPlaceholders] = useState({});
+  const [placeholders, setPlaceholders] = useState(new Map());
   const [templateContent, setTemplateContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isFinalized, setIsFinalized] = useState(false);
+  const [signatureVisible, setSignatureVisible] = useState(true);
   const sigCanvas = useRef(null);
 
   const fetchContract = async () => {
@@ -22,7 +25,8 @@ function SignContract() {
       const data = await response.json();
       setContract(data);
       setTemplateContent(data.templateContent);
-      setPlaceholders(data.placeholders || {});
+      setPlaceholders(new Map(Object.entries(data.placeholders)));
+      setIsFinalized(data.isFinalized);
     } catch (error) {
       console.error('Error fetching contract:', error);
     } finally {
@@ -36,10 +40,18 @@ function SignContract() {
 
   const saveSignature = () => {
     const signatureData = sigCanvas.current.toDataURL();
-    setPlaceholders({
-      ...placeholders,
-      client_signature: signatureData
-    });
+    const signDate = new Date().toLocaleString(); // Capture the current date and time
+
+    setPlaceholders(new Map(placeholders).set('client_signature', signatureData).set('client_sign_date', signDate));
+  };
+
+  const eraseSignature = () => {
+    sigCanvas.current.clear();
+  };
+
+  const removeSignature = () => {
+    setPlaceholders(new Map(placeholders).set('client_signature', '').set('client_sign_date', ''));
+    sigCanvas.current.clear();
   };
 
   const saveSignatureToBackend = async () => {
@@ -57,8 +69,12 @@ function SignContract() {
         if (!response.ok) {
           throw new Error('Failed to save signature');
         }
+        const data = await response.json();
         alert('Signature added successfully!');
-        fetchContract(); // Fetch the contract again to get updated data
+        setContract(data.contract); // Update contract data with the latest contract
+        setPlaceholders(new Map(Object.entries(data.contract.placeholders)));
+        setIsFinalized(true);
+        setSignatureVisible(false);
       } catch (error) {
         console.error('Error saving signature:', error);
         alert('Failed to save signature');
@@ -76,13 +92,14 @@ function SignContract() {
       if (match) {
         const placeholder = match[1];
         const isSignature = placeholder.includes('signature');
+        const isSignDate = placeholder.includes('sign_date');
         return (
           <span key={index} className="inline-input">
             {isSignature ? (
-              <span className="signature-placeholder" onClick={saveSignature}>
-                {placeholders[placeholder] ? (
+              <span className="signature-placeholder">
+                {placeholders.get(placeholder) ? (
                   <img
-                    src={placeholders[placeholder]}
+                    src={placeholders.get(placeholder)}
                     alt="Signature"
                     className="signature-image"
                   />
@@ -90,12 +107,14 @@ function SignContract() {
                   '______________________'
                 )}
               </span>
+            ) : isSignDate ? (
+              <span className="sign-date">{placeholders.get(placeholder)}</span>
             ) : (
               <textarea
-                value={placeholders[placeholder]}
+                value={placeholders.get(placeholder)}
                 placeholder={placeholder}
                 className="placeholder-input"
-                readOnly
+                readOnly={isSignDate} // Make sign date fields read-only
               />
             )}
           </span>
@@ -111,27 +130,44 @@ function SignContract() {
 
   return (
     <div className="contract-creator-container">
-      <h2>Sign Contract</h2>
+      <div className="header">
+        <h2>Sign Contract</h2>
+        <button onClick={() => navigate('/contracts')} className="view-contracts-button">
+          View All Contracts
+        </button>
+      </div>
       <form className="contract-form">
         {templateContent && (
           <div className="template-preview">
             {renderTemplateContent()}
           </div>
         )}
-        <div className="signature-section">
-          <h3>Your Signature:</h3>
-          <SignatureCanvas
-            ref={sigCanvas}
-            penColor="black"
-            canvasProps={{ className: 'signature-canvas' }}
-          />
-          <button type="button" onClick={saveSignature} className="save-button">
-            Save Signature
-          </button>
-        </div>
-        <button type="button" onClick={saveSignatureToBackend} className="submit-button">
-          Submit Signature
-        </button>
+        {!isFinalized && (
+          <>
+            {signatureVisible && (
+              <div className="signature-section">
+                <h3>Your Signature:</h3>
+                <SignatureCanvas
+                  ref={sigCanvas}
+                  penColor="black"
+                  canvasProps={{ className: 'signature-canvas' }}
+                />
+                <div className="button-group">
+                  <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
+                  <button type="button" onClick={eraseSignature} className="erase-button">Erase Signature</button>
+                </div>
+              </div>
+            )}
+            {signatureVisible && (
+              <button type="button" onClick={saveSignatureToBackend} className="submit-button">
+                Submit Signature
+              </button>
+            )}
+            {placeholders.get('client_signature') && signatureVisible && (
+              <button type="button" onClick={removeSignature} className="remove-button">Remove Signature</button>
+            )}
+          </>
+        )}
       </form>
     </div>
   );

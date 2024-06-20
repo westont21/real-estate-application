@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
+import { useNavigate } from 'react-router-dom';
 import '../styles/ContractCreator.css';
 
 function ContractCreator() {
@@ -7,7 +8,11 @@ function ContractCreator() {
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [placeholders, setPlaceholders] = useState({});
   const [templateContent, setTemplateContent] = useState('');
+  const [contractId, setContractId] = useState(null);
+  const [signatureVisible, setSignatureVisible] = useState(true);
+  const [contractGenerated, setContractGenerated] = useState(false);
   const sigCanvas = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchTemplates() {
@@ -49,10 +54,26 @@ function ContractCreator() {
 
   const saveSignature = () => {
     const signatureData = sigCanvas.current.toDataURL();
+    const signDate = new Date().toLocaleString(); // Capture the current date and time
+
     setPlaceholders({
       ...placeholders,
-      realtor_signature: signatureData
+      realtor_signature: signatureData,
+      realtor_sign_date: signDate // Automatically fill the realtor_sign_date placeholder
     });
+  };
+
+  const eraseSignature = () => {
+    sigCanvas.current.clear();
+  };
+
+  const removeSignature = () => {
+    setPlaceholders({
+      ...placeholders,
+      realtor_signature: '',
+      realtor_sign_date: '' // Clear the realtor_sign_date placeholder
+    });
+    sigCanvas.current.clear();
   };
 
   const handleSubmit = async (e) => {
@@ -65,6 +86,8 @@ function ContractCreator() {
       alert('Please add your signature.');
       return;
     }
+
+    console.log(placeholders); // Add this line to debug placeholder values before submission
 
     const response = await fetch('https://localhost:5001/api/contracts/fill-template', {
       method: 'POST',
@@ -81,6 +104,9 @@ function ContractCreator() {
 
     if (response.ok) {
       const data = await response.json();
+      setContractId(data.contract._id);
+      setSignatureVisible(false);
+      setContractGenerated(true);
       alert(data.message);
     } else {
       const data = await response.json();
@@ -99,7 +125,7 @@ function ContractCreator() {
         return (
           <span key={index} className="inline-input">
             {isSignature ? (
-              <span className="signature-placeholder" onClick={saveSignature}>
+              <span className="signature-placeholder">
                 {placeholders[placeholder] ? (
                   <img
                     src={placeholders[placeholder]}
@@ -116,6 +142,7 @@ function ContractCreator() {
                 placeholder={placeholder}
                 className="placeholder-input"
                 onChange={(e) => handlePlaceholderChange(e, placeholder)}
+                readOnly={placeholder.includes('sign_date')} // Make the sign_date placeholders read-only
               />
             )}
           </span>
@@ -127,7 +154,12 @@ function ContractCreator() {
 
   return (
     <div className="contract-creator-container">
-      <h2>Create Contract</h2>
+      <div className="header">
+        <h2>Contract Creator</h2>
+        <button onClick={() => navigate('/contracts')} className="view-contracts-button">
+          View All Contracts
+        </button>
+      </div>
       <form onSubmit={handleSubmit} className="contract-form">
         <label>
           Template:
@@ -140,23 +172,40 @@ function ContractCreator() {
         </label>
 
         {templateContent && (
-          <div className="template-preview">
-            {renderTemplateContent()}
-          </div>
+          <>
+            <div className="template-preview">
+              {renderTemplateContent()}
+            </div>
+
+            {signatureVisible && (
+              <div className="signature-section">
+                <h3>Your Signature:</h3>
+                <SignatureCanvas
+                  ref={sigCanvas}
+                  penColor="black"
+                  canvasProps={{ className: 'signature-canvas' }}
+                />
+                <div className="button-group">
+                  <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
+                  <button type="button" onClick={eraseSignature} className="erase-button">Erase Signature</button>
+                </div>
+              </div>
+            )}
+
+            {!contractGenerated && (
+              <button type="submit" className="submit-button">Generate Contract</button>
+            )}
+            {placeholders.realtor_signature && !contractGenerated && (
+              <button type="button" onClick={removeSignature} className="remove-button">Remove Signature</button>
+            )}
+          </>
         )}
-
-        <div className="signature-section">
-          <h3>Your Signature:</h3>
-          <SignatureCanvas
-            ref={sigCanvas}
-            penColor="black"
-            canvasProps={{ className: 'signature-canvas' }}
-          />
-          <button type="button" onClick={saveSignature} className="save-button">Save Signature</button>
-        </div>
-
-        <button type="submit" className="submit-button">Generate Contract</button>
       </form>
+      {contractId && (
+        <button onClick={() => navigate(`/share-contract/${contractId}`)} className="share-button">
+          Share Contract
+        </button>
+      )}
     </div>
   );
 }

@@ -18,7 +18,6 @@ function ViewContract() {
         throw new Error('Failed to fetch contract');
       }
       const data = await response.json();
-      console.log('Fetched Contract Data:', data);
       setContract(data);
       setTemplateContent(data.templateContent);
       setPlaceholders(data.placeholders || {});

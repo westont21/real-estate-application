@@ -3,7 +3,7 @@ const router = express.Router();
 const { Storage } = require('@google-cloud/storage');
 const ContractTemplate = require('../models/ContractTemplate');
 const Contract = require('../models/Contract');
-const { createFilledContractPDF, uploadToGoogleCloud } = require('../utils/pdfUtils');
+const { createFilledContractPDF, uploadToGoogleCloud, deleteFromGoogleCloud } = require('../utils/pdfUtils');
 const ensureAuthenticated = require('./authRoutes');
 
 const storage = new Storage({
@@ -33,8 +33,8 @@ router.post('/fill-template', ensureAuthenticated, async (req, res) => {
     const template = await ContractTemplate.findById(templateId);
     if (!template) return res.status(404).json({ error: 'Template not found' });
 
-    // Add realtor's signature to placeholders
-    const updatedPlaceholders = { ...placeholders, realtor_signature: signature };
+    // Add realtor's signature and date to placeholders
+    const updatedPlaceholders = { ...placeholders, realtor_signature: signature, realtor_sign_date: new Date().toLocaleString() };
 
     // Create the PDF
     const pdfBuffer = await createFilledContractPDF(template.content, updatedPlaceholders);
@@ -59,6 +59,44 @@ router.post('/fill-template', ensureAuthenticated, async (req, res) => {
     res.status(500).json({ error: 'Failed to fill template and generate PDF' });
   }
 });
+
+router.post('/add-client-signature/:id', ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const { signature } = req.body;
+
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found' });
+    }
+
+    // Update the client signature and date in the contract document
+    contract.clientSignature = signature;
+    contract.placeholders.set('client_signature', signature); // placeholders is a Map
+    contract.placeholders.set('client_sign_date', new Date().toLocaleString());
+
+    const template = await ContractTemplate.findById(contract.templateId);
+    if (!template) {
+      return res.status(404).json({ error: 'Template not found' });
+    }
+
+    // Create the updated PDF with the client signature and date
+    const pdfBuffer = await createFilledContractPDF(template.content, contract.placeholders);
+    const filePath = await uploadToGoogleCloud(pdfBuffer, contract.userId);
+
+    // Update the contract's PDF URL and set isFinalized to true
+    contract.pdfUrl = filePath;
+    contract.isFinalized = true;
+
+    await contract.save();
+
+    res.json({ message: 'Client signature added and PDF updated successfully', contract });
+  } catch (error) {
+    console.error('Error adding client signature:', error);
+    res.status(500).json({ error: 'Failed to add client signature' });
+  }
+});
+
 
 
 router.post('/share-contract/:id', ensureAuthenticated, async (req, res) => {
@@ -86,78 +124,6 @@ router.post('/share-contract/:id', ensureAuthenticated, async (req, res) => {
 });
 
 
-//Don't need 
-router.post('/add-realtor-signature/:id', ensureAuthenticated, async (req, res) => {
-  const { id } = req.params;
-  const { signature } = req.body;
-
-  try {
-    const contract = await Contract.findById(id);
-    if (!contract) {
-      return res.status(404).json({ error: 'Contract not found' });
-    }
-
-    contract.realtorSignature = signature;
-    await contract.save();
-
-    // Update the PDF with the realtor's signature
-    const template = await ContractTemplate.findById(contract.templateId);
-    const updatedPlaceholders = {
-      ...contract.placeholders,
-      realtor_signature: signature
-    };
-    const pdfBuffer = await createFilledContractPDF(template.content, updatedPlaceholders);
-    const filePath = await uploadToGoogleCloud(pdfBuffer, contract.userId);
-    contract.pdfUrl = filePath;
-    await contract.save();
-
-    res.json({ message: 'Realtor signature added', contract });
-  } catch (error) {
-    console.error('Error adding realtor signature:', error);
-    res.status(500).json({ error: 'Failed to add realtor signature' });
-  }
-});
-
-router.post('/add-client-signature/:id', ensureAuthenticated, async (req, res) => {
-  const { id } = req.params;
-  const { signature } = req.body;
-
-  try {
-    const contract = await Contract.findById(id);
-    if (!contract) {
-      return res.status(404).json({ error: 'Contract not found' });
-    }
-
-    // Update the client signature in the contract document
-    contract.clientSignature = signature;
-    contract.placeholders.set('client_signature', signature);
-
-    const template = await ContractTemplate.findById(contract.templateId);
-    if (!template) {
-      return res.status(404).json({ error: 'Template not found' });
-    }
-
-    // Create the updated PDF with the client signature
-    const pdfBuffer = await createFilledContractPDF(template.content, contract.placeholders);
-    const filePath = await uploadToGoogleCloud(pdfBuffer, contract.userId);
-
-    // Update the contract's PDF URL
-    contract.pdfUrl = filePath;
-
-    await contract.save();
-
-    res.json({ message: 'Client signature added and PDF updated successfully' });
-  } catch (error) {
-    console.error('Error adding client signature:', error);
-    res.status(500).json({ error: 'Failed to add client signature' });
-  }
-});
-
-
-
-
-
-
 router.get('/all', ensureAuthenticated, async (req, res) => {
   try {
     const contracts = await Contract.find({ 
@@ -174,14 +140,11 @@ router.get('/all', ensureAuthenticated, async (req, res) => {
 
 router.get('/:id', ensureAuthenticated, async (req, res) => {
   try {
-    console.log('Fetching contract with ID:', req.params.id);
     const contract = await Contract.findById(req.params.id);
     if (!contract) {
       console.log('Contract not found');
       return res.status(404).json({ error: 'Contract not found' });
     }
-
-    console.log('Contract found:', contract);
 
     if (!(contract.userId.toString() === req.user.id.toString() || contract.sharedWith.includes(req.user.id))) {
       console.log('Unauthorized access');
@@ -217,8 +180,41 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+router.delete('/delete/:id', ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const contract = await Contract.findById(id);
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found' });
+    }
 
+    // Check if the user is the owner of the contract
+    if (contract.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    // Check if the contract is finalized
+    if (contract.isFinalized) {
+      return res.status(400).json({ error: 'Cannot delete finalized contract' });
+    }
+
+    // If the contract has been shared, mark it as deleted
+    if (contract.sharedWith.length > 0) {
+      contract.deleted = true;
+      await contract.save();
+      return res.json({ message: 'Contract marked as deleted' });
+    }
+
+    // Otherwise, delete the contract and its PDF from Google Cloud
+    await deleteFromGoogleCloud(contract.pdfUrl);
+    await Contract.deleteOne({ _id: id });
+    res.json({ message: 'Contract deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting contract:', error);
+    res.status(500).json({ error: 'Failed to delete contract' });
+  }
+});
 
 // Temporary route for testing PDF generation without uploading
 router.post('/view-pdf', ensureAuthenticated, async (req, res) => {
