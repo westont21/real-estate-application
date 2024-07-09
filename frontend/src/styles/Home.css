@@ -1,179 +1,174 @@
 /* src/styles/Home.css */
 
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .home-container {
-    position: relative;
-    width: 100%;
-    min-height: 100vh; /* Ensure it covers at least the full viewport height */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .video-section {
-    position: relative;
-    width: 100%;
-    height: 80vh; /* Adjust height to leave room for the footer and other content */
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    z-index: 0; /* Make sure it's behind other content */
-  }
-  
-  .background-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 1;
-  }
-  
-  .content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white; /* White color for the text */
-    z-index: 2; /* Above the overlay */
-  }
-  
-  .content h1 {
-    font-size: 3rem; /* Adjust size as needed */
-    font-weight: 700; /* Makes font bold */
-    color: white; /* White color for contrast */
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Dark shadow for readability */
-    margin-bottom: 1rem;
-  }
-  
-  .content p {
-    font-size: 1.5rem; /* Adjust size as needed */
-    font-weight: 500; /* Slightly bold for readability */
-    color: white; /* White color for readability */
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Dark shadow for readability */
-  }
-  
-  .cta-button {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none; /* Ensure the text is not underlined */
-    display: inline-block;
-    transition: background-color 0.3s ease;
-  }
-  
-  .cta-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .testimonials-section {
-    padding: 20px;
-    background-color: #f8f8f8;
-    text-align: center;
-  }
-  
-  .testimonial blockquote {
-    font-size: 1.2rem;
-    font-style: italic;
-    color: #555;
-  }
-  
-  .testimonial cite {
-    display: block;
-    margin-top: 10px;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .realtor-profiles {
-    text-align: center;
-    padding: 40px 20px;
-  }
-  
-  .realtor-profiles h2 {
-    font-size: 2rem;
-    margin-bottom: 10px;
-  }
-  
-  .realtor-profiles p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-  }
-  
-  .realtor-card {
-    display: inline-block;
-    position: relative;
-    width: 250px;
-    height: 350px;
-    margin: 20px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  
-  .realtor-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .realtor-card:hover {
-    transform: scale(1.05);
-  }
-  
-  .realtor-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  .realtor-card:hover .realtor-info {
-    opacity: 1;
-  }
-  
-  .realtor-info h3 {
-    margin: 0;
-    padding: 10px;
-    font-size: 1rem;
-  }
-  
-  .footer {
-    padding: 20px;
-    background-color: #282c34;
-    color: white;
-    text-align: center;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-  }
-  
-  /* Add padding to ensure the footer is visible even after scrolling */
-  .home-container {
-    padding-bottom: 100px;
-  }
-  
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+.home-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh; /* Ensure it covers at least the full viewport height */
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px; /* Add padding to ensure the footer is visible even after scrolling */
+}
+
+.photo-section {
+  position: relative;
+  width: 100%;
+  height: 70vh; /* Adjust to cover the full viewport height */
+  overflow: hidden;
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+}
+
+.background-photo {
+  position: absolute; /* Position it absolutely to cover the parent */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the section without stretching */
+  z-index: -1; /* Place the image behind the overlay and content */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust overlay color and opacity as needed */
+}
+
+.content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+}
+
+.content h1 {
+  font-size: 3rem; /* Adjust size as needed */
+  font-weight: 700; /* Makes font bold */
+  color: white; /* White color for contrast */
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Dark shadow for readability */
+  margin-bottom: 1rem;
+}
+
+.content p {
+  font-size: 1.5rem; /* Adjust size as needed */
+  font-weight: 500; /* Slightly bold for readability */
+  color: white; /* White color for readability */
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Dark shadow for readability */
+}
+
+.cta-button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none; /* Ensure the text is not underlined */
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+}
+
+.testimonials-section {
+  padding: 20px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+.testimonial blockquote {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #555;
+}
+
+.testimonial cite {
+  display: block;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.realtor-profiles {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.realtor-profiles h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.realtor-profiles p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.realtor-card {
+  display: inline-block;
+  position: relative;
+  width: 250px;
+  height: 350px;
+  margin: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.realtor-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.realtor-card:hover {
+  transform: scale(1.05);
+}
+
+.realtor-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.realtor-card:hover .realtor-info {
+  opacity: 1;
+}
+
+.realtor-info h3 {
+  margin: 0;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.footer {
+  padding: 20px;
+  background-color: #282c34;
+  color: white;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+

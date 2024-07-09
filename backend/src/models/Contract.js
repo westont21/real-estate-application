@@ -5,7 +5,6 @@ const contractSchema = new mongoose.Schema({
   templateId: { type: mongoose.Schema.Types.ObjectId, ref: 'ContractTemplate', required: true },
   pdfUrl: { type: String, required: true },
   realtorSignature: { type: String },
-  clientSignature: { type: String },
   placeholders: { type: Map, of: String },
   isFinalized: { type: Boolean, default: false },
   sharedWith: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

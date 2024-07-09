@@ -1,23 +1,27 @@
 import React, { useState } from 'react';
-import '../styles/Messaging.css';
+import '../styles/MessageForm.css';
 
-const MessageForm = ({ onMessageSent }) => {
-  const [receiverId, setReceiverId] = useState('');
+const MessageForm = ({ receiverId, onMessageSent, onClose }) => {
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      const payload = { receiverId, message };
+      console.log('Sending payload:', payload); // Log the payload to debug
       const response = await fetch('https://localhost:5001/api/messages', {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ receiverId, message })
+        body: JSON.stringify(payload)
       });
-      if (!response.ok) throw new Error('Failed to send message');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to send message: ${errorData.error}`);
+      }
       const data = await response.json();
       onMessageSent(data);
       setMessage('');
@@ -29,17 +33,6 @@ const MessageForm = ({ onMessageSent }) => {
   return (
     <form onSubmit={handleSubmit} className="message-form">
       <label>
-        To:
-        <input
-          type="text"
-          value={receiverId}
-          onChange={(e) => setReceiverId(e.target.value)}
-          placeholder="Receiver ID"
-          required
-        />
-      </label>
-      <label>
-        Message:
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -47,7 +40,7 @@ const MessageForm = ({ onMessageSent }) => {
           required
         />
       </label>
-      <button type="submit">Send Message</button>
+      <button type="submit" className="btn">Send Message</button>
     </form>
   );
 };

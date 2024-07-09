@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Home.css'; // Link to your CSS file for the homepage
-import jupiterHomeVideo from '../assets/videos/jup_home.mp4'; // Import the video
+import jupiterHomePicture from '../assets/images/jup_home.jpg'; // Import the picuture
 import LayneHeadshot from '../assets/images/Layne4x6.jpg'; // Import the video
 import WestonHeadshot from '../assets/images/Headshot.jpg'; // Import the video
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
@@ -14,7 +14,6 @@ function Home() {
             {/* Header content positioned over the video */}
             <header style={{ position: 'absolute', top: '10px', right: '20px', zIndex: 2 }}>
                 <nav>
-                    <Link to="/how-it-works" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>How It Works</Link>
                     <Link to="/about-us" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>About Us</Link>
                     <Link to="/contracts" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>Contracts</Link>
                     <Link to="/users/search" style={{ color: 'white', textDecoration: 'none', marginLeft: '20px' }}>Users</Link>
@@ -28,11 +27,8 @@ function Home() {
                 </nav>
             </header>
 
-            <section className="video-section">
-                <video autoPlay loop muted className="background-video">
-                    <source src={jupiterHomeVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
+            <section className="photo-section">
+                <img src={jupiterHomePicture} alt="Jupiter Home" className="background-photo" />
 
                 <div className="overlay"></div> {/* Optional: Add an overlay to improve text readability */}
                 <div className="content">
@@ -41,6 +37,8 @@ function Home() {
                     <Link to="/posts/view" className="cta-button">Get Started</Link>
                 </div>
             </section>
+
+
 
             <section className="testimonials-section">
                 <div className="testimonial">

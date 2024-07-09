@@ -1,0 +1,36 @@
+.message-thread {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.message-thread-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+  padding-bottom: 60px; /* Adjust padding to ensure space for MessageForm */
+  box-sizing: border-box; /* Ensure padding is included in the element's total width and height */
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  display: inline-block;
+  word-wrap: break-word;
+  margin-bottom: 10px;
+}
+
+.my-message {
+  align-self: flex-end;
+  background-color: #007BFF;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.other-message {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: black;
+  border-bottom-left-radius: 0;
+}

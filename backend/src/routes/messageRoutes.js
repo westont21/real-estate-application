@@ -7,8 +7,11 @@ const ensureAuthenticated = require('./authRoutes');
 router.post('/messages', ensureAuthenticated, async (req, res) => {
   const { receiverId, message } = req.body;
 
+  console.log('Received payload:', req.body);
+
   if (!receiverId || !message) {
-    return res.status(400).json({ error: 'Receiver and message are required.' });
+    console.log('Validation failed:', { receiverId, message });
+    return res.status(400).json({ error: 'Receiver ID and message are required.' });
   }
 
   try {

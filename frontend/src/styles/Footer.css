@@ -1,0 +1,13 @@
+/* Footer.css */
+
+.App-footer {
+    flex: 0 0 auto;
+    background-color: #282c34;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  

@@ -70,10 +70,7 @@ router.post('/add-client-signature/:id', ensureAuthenticated, async (req, res) =
       return res.status(404).json({ error: 'Contract not found' });
     }
 
-    // Update the client signature and date in the contract document
-    contract.clientSignature = signature;
-    contract.placeholders.set('client_signature', signature); // placeholders is a Map
-    contract.placeholders.set('client_sign_date', new Date().toLocaleString());
+
 
     const template = await ContractTemplate.findById(contract.templateId);
     if (!template) {
@@ -170,7 +167,6 @@ router.get('/:id', ensureAuthenticated, async (req, res) => {
       url,
       templateContent: template.content,
       placeholders: contract.placeholders,
-      clientSignature: contract.clientSignature,
       realtorSignature: contract.realtorSignature,
       isFinalized: contract.isFinalized,
     });
