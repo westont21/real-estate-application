@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/ComposeMessage.css';
+import { useAuth } from '../context/AuthContext';
 
 const ComposeMessage = ({ onSelectUser }) => {
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState([]);
+  const { auth } = useAuth();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -13,14 +15,16 @@ const ComposeMessage = ({ onSelectUser }) => {
         });
         if (!response.ok) throw new Error('Failed to fetch users');
         const data = await response.json();
-        setUsers(data);
+        // Exclude the authenticated user from the list
+        const filteredUsers = data.filter(user => user._id !== auth.user.id);
+        setUsers(filteredUsers);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     }
 
     fetchUsers();
-  }, []);
+  }, [auth.user.id]);
 
   const handleSearch = async () => {
     try {
@@ -29,7 +33,9 @@ const ComposeMessage = ({ onSelectUser }) => {
       });
       if (!response.ok) throw new Error('Failed to search users');
       const data = await response.json();
-      setUsers(data);
+      // Exclude the authenticated user from the list
+      const filteredUsers = data.filter(user => user._id !== auth.user.id);
+      setUsers(filteredUsers);
     } catch (error) {
       console.error('Error searching users:', error);
     }

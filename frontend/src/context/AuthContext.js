@@ -6,7 +6,6 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({ isAuthenticated: false });
 
     useEffect(() => {
-        // This function checks the current auth state when the component mounts
         const verifySession = async () => {
             try {
                 const response = await fetch('https://localhost:5001/verify', {
@@ -14,7 +13,6 @@ export const AuthProvider = ({ children }) => {
                     credentials: 'include'
                 });
                 const data = await response.json();
-                console.log(data)
                 if (response.ok && data.isAuthenticated) {
                     setAuth({ isAuthenticated: true, user: data.user });
                 } else {

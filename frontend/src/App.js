@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Footer from './components/Footer';
 import Home from './components/Home';
 import Login from './components/Login';
@@ -84,11 +84,18 @@ const App = () => {
             } />
           </Routes>
         </main>
-        <MessagingBar />
+        <AuthBasedMessagingBar />
         <Footer />
       </div>
     </AuthProvider>
   );
+};
+
+const AuthBasedMessagingBar = () => {
+  const { auth } = useAuth();
+
+  if (!auth.isAuthenticated) return null;
+  return <MessagingBar />;
 };
 
 export default App;

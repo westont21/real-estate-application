@@ -11,18 +11,18 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('./models/User');
-//Route Imports
-const authRoutes = require('./routes/authRoutes.js')
+// Route Imports
+const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const contractRoutes = require('./routes/contractRoutes');
 const postRoutes = require('./routes/postRoutes');
 const messageRoutes = require('./routes/messageRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRoutes'); // Ensure this is correctly imported
 
-//Logging with Winston and HTTP request logging with Morgan
+// Logging with Winston and HTTP request logging with Morgan
 const winston = require('winston');
 const morgan = require('morgan');
-//monitoring 
+// Monitoring
 const promClient = require('prom-client');
 require('dotenv').config();
 
@@ -37,7 +37,7 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));//Handel preflight globally
+app.options('*', cors(corsOptions)); // Handle preflight globally
 
 app.use(express.json());
 app.use(cookieParser());
@@ -82,7 +82,6 @@ logger.error('Error level log');
 
 /*
   MongoDB and session configurations 
-
 */
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI).then(() => console.log("MongoDB connected"))
@@ -106,11 +105,11 @@ app.use(session({
 /*
   Google Strategy 
 */
-//Google strategy to handle user creation or retrieval from database
+// Google strategy to handle user creation or retrieval from database
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "https://localhost:5001/auth/google/callback", 
+  callbackURL: "https://localhost:5001/auth/google/callback",
   prompt: 'select_account'  // This often needs to be set in the authentication URL instead
 },
   async function (accessToken, refreshToken, profile, cb) {
@@ -132,7 +131,6 @@ passport.use(new GoogleStrategy({
   }));
 
 passport.serializeUser(function (user, done) {
-  
   done(null, user.id); // Serialize user by their id
 });
 passport.deserializeUser(async (id, done) => {
@@ -150,7 +148,7 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Server-Side Session Debugging
+// Server-Side Session Debugging
 // app.use((req, res, next) => {
 //   console.log('Session ID:', req.sessionID);
 //   console.log('Session data:', req.session);
@@ -166,36 +164,35 @@ app.get('/metrics', async (req, res) => {
   res.end(await promClient.register.metrics());
 });
 
-app.use(authRoutes); 
-app.use(profileRoutes); // this is for setting up and view your own profile
-app.use('/api', userRoutes); // This is for view other's profiles
+app.use(authRoutes);
+app.use(profileRoutes); // this is for setting up and viewing your own profile
+app.use('/api', userRoutes); // This is for viewing others' profiles
 app.use('/api/contracts', contractRoutes);
 app.use('/api', postRoutes);
-app.use('/api', messageRoutes); 
+app.use('/api', messageRoutes); // Ensure this is correctly used
 
-  /* 
+/* 
   Route to handle verification of user session.  If the user is authenticated,
   it retrieves the user's data from the database and sends it back to the client.
-  */
-  app.get('/verify', async (req, res) => {
-    if (req.isAuthenticated()) {
-      try {
-        // Assuming req.user is populated according to session and passport configuration
-        const user = await User.findById(req.user.id);
-        // Check if user was found
-        if (!user) {
-          return res.status(404).json({ isAuthenticated: true, error: 'User not found.' });
-        }
-        res.json({ isAuthenticated: true, user: { id: user.id, username: user.username, email: user.email } });
-      } catch (err) {
-        console.error("Database error:", err); // Log error for debugging
-        res.status(500).json({ isAuthenticated: false, error: 'Failed to retrieve user data.' });
+*/
+app.get('/verify', async (req, res) => {
+  if (req.isAuthenticated()) {
+    try {
+      // Assuming req.user is populated according to session and passport configuration
+      const user = await User.findById(req.user.id);
+      // Check if user was found
+      if (!user) {
+        return res.status(404).json({ isAuthenticated: true, error: 'User not found.' });
       }
-    } else {
-      res.status(401).json({ isAuthenticated: false });
+      res.json({ isAuthenticated: true, user: { id: user.id, username: user.username, email: user.email } });
+    } catch (err) {
+      console.error("Database error:", err); // Log error for debugging
+      res.status(500).json({ isAuthenticated: false, error: 'Failed to retrieve user data.' });
     }
-  });
-
+  } else {
+    res.status(401).json({ isAuthenticated: false });
+  }
+});
 
 app.use((err, req, res, next) => {
   console.error('An error occurred:', err.stack);

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const ensureAuthenticated = require('./authRoutes');
+const ensureAuthenticated = require('../middleware/authMiddleware'); // Correct import path
 
 // Get all users
 router.get('/users', ensureAuthenticated, async (req, res) => {
